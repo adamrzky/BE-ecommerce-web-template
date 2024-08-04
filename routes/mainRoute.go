@@ -1,12 +1,14 @@
 package routes
 
 import (
+	"BE-ecommerce-web-template/controllers"
+	"BE-ecommerce-web-template/repositories"
+	"BE-ecommerce-web-template/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
-
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
 	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
+	"gorm.io/gorm"
 )
 
 func SetupRouter(db *gorm.DB, r *gin.Engine) {
@@ -26,8 +28,17 @@ func SetupRouter(db *gorm.DB, r *gin.Engine) {
 		c.Set("db", db)
 	})
 
-	// r.POST("/register", controllers.Register)
-	// r.POST("/login", controllers.Login)
+	userRepo := repository.NewUserRepository(db)
+	authService := &services.AuthService{
+		UserRepo: userRepo,
+	}
+
+	authController := controllers.NewAuthController(authService)
+
+	r.POST("/register", authController.Register)
+	r.POST("/login", authController.Login)
+	r.GET("/auth/me", authController.Me)
+	r.POST("/auth/change-password", authController.ChangePassword)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }

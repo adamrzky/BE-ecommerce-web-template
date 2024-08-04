@@ -2,7 +2,7 @@ package api
 
 import (
 	"BE-ecommerce-web-template/config"
-	// "BE-ecommerce-web-template/docs"
+	"BE-ecommerce-web-template/docs"
 	"BE-ecommerce-web-template/routes"
 	"log"
 	"net/http"
@@ -16,6 +16,10 @@ var (
 	App *gin.Engine
 )
 
+// @BasePath /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func init() {
 	App = gin.New()
 
@@ -31,18 +35,18 @@ func init() {
 		}
 	}
 
-	// docs.SwaggerInfo.Title = "Movie REST API"
-	// docs.SwaggerInfo.Description = "This is REST API Movie."
-	// docs.SwaggerInfo.Version = "1.0"
-	// docs.SwaggerInfo.Host = os.Getenv("HOST")
-	// if docs.SwaggerInfo.Host == "" {
-	// 	docs.SwaggerInfo.Host = "localhost:8080"
-	// }
-	// if environment == "development" {
-	// 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
-	// } else {
-	// 	docs.SwaggerInfo.Schemes = []string{"https"}
-	// }
+	docs.SwaggerInfo.Title = "E-Commerce REST API"
+	docs.SwaggerInfo.Description = "This is REST API E-Commerce."
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.Host = os.Getenv("HOST")
+	if docs.SwaggerInfo.Host == "" {
+		docs.SwaggerInfo.Host = "localhost:8080"
+	}
+	if environment == "development" {
+		docs.SwaggerInfo.Schemes = []string{"http", "https"}
+	} else {
+		docs.SwaggerInfo.Schemes = []string{"https"}
+	}
 
 	db := config.ConnectDataBase()
 	routes.SetupRouter(db, App)

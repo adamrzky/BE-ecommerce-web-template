@@ -22,6 +22,27 @@ definitions:
       status:
         type: string
     type: object
+  models.Transaction:
+    properties:
+      created_AT:
+        type: string
+      id:
+        type: integer
+      pay_DATE:
+        type: string
+      product_ID:
+        type: integer
+      status:
+        type: integer
+      total:
+        type: integer
+      trx_ID:
+        type: string
+      updated_AT:
+        type: string
+      user_ID:
+        type: integer
+    type: object
   models.User:
     properties:
       email:
@@ -202,6 +223,111 @@ paths:
       summary: Register a new user
       tags:
       - auth
+  /transactions:
+    post:
+      consumes:
+      - application/json
+      description: create a new transaction
+      parameters:
+      - description: Create Transaction
+        in: body
+        name: transaction
+        required: true
+        schema:
+          $ref: '#/definitions/models.Transaction'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create a transaction
+      tags:
+      - transactions
+  /transactions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete a transaction by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete a transaction
+      tags:
+      - transactions
+    get:
+      consumes:
+      - application/json
+      description: get transaction by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Retrieve a transaction
+      tags:
+      - transactions
+    put:
+      consumes:
+      - application/json
+      description: update a transaction by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Transaction
+        in: body
+        name: transaction
+        required: true
+        schema:
+          $ref: '#/definitions/models.Transaction'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Update a transaction
+      tags:
+      - transactions
 securityDefinitions:
   BearerAuth:
     in: header

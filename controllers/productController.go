@@ -26,6 +26,18 @@ func NewProductController(e *gin.Engine, cs services.ProductService) {
 	}
 }
 
+// post creates a new product
+// @Summary Create a new product
+// @Description Create a new product with the provided details
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param product body models.ProductRequest true "Product details"
+// @Success 200 {object} models.SuccessResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.SuccessResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /product [post]
 func (controller *productController) post(c *gin.Context) {
 	var req models.ProductRequest
 
@@ -42,6 +54,20 @@ func (controller *productController) post(c *gin.Context) {
 	resp.NewResponseWriteSuccess(c, "data created")
 }
 
+// getAll retrieves all products with optional query parameters
+// @Summary Get all products
+// @Description Retrieve a list of all products with optional filtering by price and pagination
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param min_price query float32 false "Minimum price filter"
+// @Param max_price query float32 false "Maximum price filter"
+// @Param limit query int true "Limit the number of results returned" mininum(1)
+// @Param offset query int false "Offset for pagination"
+// @Success 200 {object} models.SuccessResponse{data=[]models.ProductResponse}
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /product [get]
 func (controller *productController) getAll(c *gin.Context) {
 	var queryParams models.ProductQueryParam
 	if err := c.ShouldBindQuery(&queryParams); err != nil {
@@ -58,6 +84,16 @@ func (controller *productController) getAll(c *gin.Context) {
 	resp.NewResponseSuccess(c, products, "data received")
 }
 
+// getByID retrieves a product by its ID
+// @Summary Get a product by ID
+// @Description Retrieve a product by its ID
+// @Tags Product
+// @Produce json
+// @Param productID path int true "Product ID"
+// @Success 200 {object} models.SuccessResponse{data=models.ProductResponse}
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /product/{productID} [get]
 func (controller *productController) getByID(c *gin.Context) {
 	id := c.Param("productID")
 
@@ -70,6 +106,19 @@ func (controller *productController) getByID(c *gin.Context) {
 	resp.NewResponseSuccess(c, product, "data received")
 }
 
+// update modifies an existing product
+// @Summary Update a product
+// @Description Update an existing product with the provided details
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param productID path int true "Product ID"
+// @Param product body models.ProductRequest true "Product details"
+// @Success 200 {object} models.SuccessResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.SuccessResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /product/{productID} [put]
 func (controller *productController) update(c *gin.Context) {
 	var req models.ProductRequest
 	id := c.Param("productID")
@@ -87,6 +136,15 @@ func (controller *productController) update(c *gin.Context) {
 	resp.NewResponseWriteSuccess(c, "data updated")
 }
 
+// delete removes a product by its ID
+// @Summary Delete a product
+// @Description Delete a product by its ID
+// @Tags Product
+// @Param productID path int true "Product ID"
+// @Success 200 {object} models.SuccessResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /product/{productID} [delete]
 func (controller *productController) delete(c *gin.Context) {
 	id := c.Param("productID")
 

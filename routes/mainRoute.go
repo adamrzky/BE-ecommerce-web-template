@@ -47,4 +47,8 @@ func SetupRouter(db *gorm.DB, r *gin.Engine) {
 	categoryService := services.NewCategoryService(categoryRepo)
 	controllers.NewCategoryController(r, categoryService)
 
+	productRepo := repository.NewProductRepository(db)
+	productService := services.NewProductService(productRepo)
+	controllers.NewProductController(r, productService)
+
 }

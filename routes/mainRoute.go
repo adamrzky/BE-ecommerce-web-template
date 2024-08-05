@@ -2,8 +2,9 @@ package routes
 
 import (
 	"BE-ecommerce-web-template/controllers"
-	"BE-ecommerce-web-template/repositories"
+	repository "BE-ecommerce-web-template/repositories"
 	"BE-ecommerce-web-template/services"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
@@ -41,4 +42,9 @@ func SetupRouter(db *gorm.DB, r *gin.Engine) {
 	r.POST("/auth/change-password", authController.ChangePassword)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	categoryRepo := repository.NewCategoryRepository(db)
+	categoryService := services.NewCategoryService(categoryRepo)
+	controllers.NewCategoryController(r, categoryService)
+
 }

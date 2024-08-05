@@ -15,14 +15,6 @@ func NewResponseSuccess(c *gin.Context, result interface{}, message string) {
 	})
 }
 
-// Use NewResponseWriteSuccess for writes method such as POST, UPDATE, DELETE
-func NewResponseWriteSuccess(c *gin.Context, message string) {
-	c.JSON(http.StatusOK, models.SuccessResponse{
-		Status:  "success",
-		Message: message,
-	})
-}
-
 func NewResponseBadRequest(c *gin.Context, message string) {
 	c.JSON(http.StatusBadRequest, models.SuccessResponse{
 		Status:  "bad request",

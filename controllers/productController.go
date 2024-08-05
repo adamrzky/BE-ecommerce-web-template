@@ -51,7 +51,7 @@ func (controller *productController) post(c *gin.Context) {
 		return
 	}
 
-	resp.NewResponseWriteSuccess(c, "data created")
+	resp.NewResponseSuccess(c, nil, "data created")
 }
 
 // getAll retrieves all products with optional query parameters
@@ -133,7 +133,7 @@ func (controller *productController) update(c *gin.Context) {
 		return
 	}
 
-	resp.NewResponseWriteSuccess(c, "data updated")
+	resp.NewResponseSuccess(c, nil, "data updated")
 }
 
 // delete removes a product by its ID
@@ -153,5 +153,5 @@ func (controller *productController) delete(c *gin.Context) {
 		return
 	}
 
-	resp.NewResponseWriteSuccess(c, "data deleted")
+	resp.NewResponseSuccess(c, nil, "data deleted")
 }

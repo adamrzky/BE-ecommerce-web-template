@@ -2,7 +2,7 @@ package models
 
 type (
 	ProductResponse struct {
-		ID         uint             `json:"ID"`
+		ID         uint             `json:"id"`
 		Name       string           `json:"name"`
 		Price      float32          `json:"price"`
 		Slug       string           `json:"slug"`
@@ -22,9 +22,10 @@ type (
 	}
 
 	ProductQueryParam struct {
-		MinPrice float32 `form:"min_price"`
-		MaxPrice float32 `form:"max_price"`
-		Limit    int     `form:"limit" validate:"required,min=1"`
-		Offset   int     `form:"offset"`
+		ProductName string  `form:"productName"`
+		MinPrice    float32 `form:"minPrice"`
+		MaxPrice    float32 `form:"maxPrice"`
+		Limit       int     `form:"limit" validate:"required,min=1"`
+		Offset      int     `form:"offset"`
 	}
 )

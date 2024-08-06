@@ -26,6 +26,11 @@ func (repo *productRepository) GetAll(params models.ProductQueryParam) ([]models
 	var products []models.Product
 	query := repo.db.Preload("Category")
 
+	// Name filter
+	if params.ProductName != "" {
+		query = query.Where("name LIKE ?", "%"+params.ProductName+"%")
+	}
+
 	// Price filter
 	if params.MinPrice > 0 {
 		query = query.Where("price >= ?", params.MinPrice)

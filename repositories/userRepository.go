@@ -1,4 +1,4 @@
-package repository
+package repositories
 
 import (
 	"BE-ecommerce-web-template/models"

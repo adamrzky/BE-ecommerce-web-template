@@ -140,3 +140,79 @@ func (ctrl *ProfileController) GetByID(c *gin.Context) {
 		Data:    profile,
 	})
 }
+
+// GetProfileByUserID godoc
+// @Summary Get Profile by User ID.
+// @Description Retrieve a Profile by its User ID.
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Success 200 {object} models.SuccessResponse{data=models.Profile} "Profile retrieved successfully"
+// @Failure 404 {object} models.ErrorResponse "Profile not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /profiles/{id}/user [get]
+func (ctrl *ProfileController) GetByUserID(c *gin.Context) {
+	userIDStr := c.Param("id")
+	userID, err := strconv.ParseUint(userIDStr, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Status:  "error",
+			Message: "Invalid user ID: " + userIDStr,
+		})
+		return
+	}
+
+	profile, err := ctrl.profileService.GetProfileByUserID(uint(userID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Status:  "error",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.SuccessResponse{
+		Status:  "success",
+		Message: "Profile retrieved successfully",
+		Data:    profile,
+	})
+}
+
+// DeleteProfileByID godoc
+// @Summary Delete Profile by ID.
+// @Description Delete a Profile by its ID.
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Param id path int true "Profile ID"
+// @Success 200 {object} models.SuccessResponse{data=models.Profile} "Profile deleted successfully"
+// @Failure 404 {object} models.ErrorResponse "Profile not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /profiles/{id} [delete]
+func (ctrl *ProfileController) Delete(c *gin.Context) {
+	profileIDStr := c.Param("id")
+	profileID, err := strconv.ParseUint(profileIDStr, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Status:  "error",
+			Message: "Invalid profile ID",
+		})
+		return
+	}
+
+	profile, err := ctrl.profileService.DeleteProfile(uint(profileID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Status:  "error",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.SuccessResponse{
+		Status:  "success",
+		Message: "Profile deleted successfully",
+		Data:    profile,
+	})
+}

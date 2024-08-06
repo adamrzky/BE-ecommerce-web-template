@@ -69,3 +69,11 @@ func (s *ProfileService) ExtractTokenID(c *gin.Context) (uint, error) {
 func (s *ProfileService) GetProfileByID(profileID uint) (models.Profile, error) {
 	return s.ProfileRepo.GetProfileByID(profileID)
 }
+
+func (s *ProfileService) GetProfileByUserID(userID uint) (models.Profile, error) {
+	return s.ProfileRepo.GetProfileByUserID(userID)
+}
+
+func (s *ProfileService) DeleteProfile(id uint) (models.Profile, error) {
+	return s.ProfileRepo.DeleteProfile(id)
+}

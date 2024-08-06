@@ -60,8 +60,9 @@ func (controller *productController) post(c *gin.Context) {
 // @Tags Product
 // @Accept json
 // @Produce json
-// @Param min_price query float32 false "Minimum price filter"
-// @Param max_price query float32 false "Maximum price filter"
+// @Param productName query string false "Product name filter"
+// @Param minPrice query float32 false "Minimum price filter"
+// @Param maxPrice query float32 false "Maximum price filter"
 // @Param limit query int true "Limit the number of results returned" mininum(1)
 // @Param offset query int false "Offset for pagination"
 // @Success 200 {object} models.SuccessResponse{data=[]models.ProductResponse}

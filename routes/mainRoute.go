@@ -2,7 +2,7 @@ package routes
 
 import (
 	"BE-ecommerce-web-template/controllers"
-	"BE-ecommerce-web-template/repositories"
+	repository "BE-ecommerce-web-template/repositories"
 	"BE-ecommerce-web-template/services"
 
 	"github.com/gin-contrib/cors"
@@ -53,4 +53,13 @@ func SetupRouter(db *gorm.DB, r *gin.Engine) {
 
 	// Swagger API Docs
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	categoryRepo := repository.NewCategoryRepository(db)
+	categoryService := services.NewCategoryService(categoryRepo)
+	controllers.NewCategoryController(r, categoryService)
+
+	productRepo := repository.NewProductRepository(db)
+	productService := services.NewProductService(productRepo)
+	controllers.NewProductController(r, productService)
+
 }

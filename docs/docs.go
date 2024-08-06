@@ -506,15 +506,21 @@ const docTemplate = `{
                 "summary": "Get all products",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Product name filter",
+                        "name": "productName",
+                        "in": "query"
+                    },
+                    {
                         "type": "number",
                         "description": "Minimum price filter",
-                        "name": "min_price",
+                        "name": "minPrice",
                         "in": "query"
                     },
                     {
                         "type": "number",
                         "description": "Maximum price filter",
-                        "name": "max_price",
+                        "name": "maxPrice",
                         "in": "query"
                     },
                     {
@@ -1669,13 +1675,13 @@ const docTemplate = `{
         "models.ProductResponse": {
             "type": "object",
             "properties": {
-                "ID": {
-                    "type": "integer"
-                },
                 "category": {
                     "$ref": "#/definitions/models.CategoryResponse"
                 },
                 "category_id": {
+                    "type": "integer"
+                },
+                "id": {
                     "type": "integer"
                 },
                 "image_url": {
@@ -1704,6 +1710,9 @@ const docTemplate = `{
                 "city": {
                     "type": "string"
                 },
+                "created_at": {
+                    "type": "string"
+                },
                 "date": {
                     "type": "string"
                 },
@@ -1717,6 +1726,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 },
                 "user": {
@@ -1775,10 +1787,16 @@ const docTemplate = `{
         "models.Role": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -1811,7 +1829,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "status": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "total": {
                     "type": "integer"
@@ -1830,6 +1848,9 @@ const docTemplate = `{
         "models.User": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -1844,6 +1865,9 @@ const docTemplate = `{
                 },
                 "roleID": {
                     "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
                 },
                 "username": {
                     "type": "string"

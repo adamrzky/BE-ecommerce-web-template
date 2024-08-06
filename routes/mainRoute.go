@@ -2,6 +2,7 @@ package routes
 
 import (
 	"BE-ecommerce-web-template/controllers"
+	"BE-ecommerce-web-template/middlewares"
 	"BE-ecommerce-web-template/repositories"
 	"BE-ecommerce-web-template/services"
 
@@ -63,6 +64,18 @@ func SetupRouter(db *gorm.DB, r *gin.Engine) {
 	productRepo := repositories.NewProductRepository(db)
 	productService := services.NewProductService(productRepo)
 	controllers.NewProductController(r, productService)
+
+	// Reviews
+	reviewRepo := repositories.NewReviewRepository(db)
+	reviewService := services.NewReviewService(reviewRepo)
+	reviewController := controllers.NewReviewController(reviewService)
+
+	r.GET("/my-reviews", middlewares.JwtAuthMiddleware(), reviewController.GetMyReviews)
+	r.GET("/reviews/:id", reviewController.GetReviewById)
+	r.GET("/reviews-product/:id", reviewController.GetReviewByProductId)
+	r.POST("/reviews", middlewares.JwtAuthMiddleware(), reviewController.CreateReview)
+	r.PUT("/reviews/:id", middlewares.JwtAuthMiddleware(), reviewController.UpdateReview)
+	r.DELETE("/reviews/:id", middlewares.JwtAuthMiddleware(), reviewController.DeleteReview)
 
 	//Profile
 	ProfileRepo := repositories.NewProfileRepository(db)

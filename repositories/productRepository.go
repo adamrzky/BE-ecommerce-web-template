@@ -28,15 +28,15 @@ func (repo *productRepository) GetAll(params models.ProductQueryParam) ([]models
 
 	// Name filter
 	if params.ProductName != "" {
-		query = query.Where("name LIKE ?", "%"+params.ProductName+"%")
+		query = query.Where("NAME LIKE ?", "%"+params.ProductName+"%")
 	}
 
 	// Price filter
 	if params.MinPrice > 0 {
-		query = query.Where("price >= ?", params.MinPrice)
+		query = query.Where("PRICE >= ?", params.MinPrice)
 	}
 	if params.MaxPrice > 0 {
-		query = query.Where("price <= ?", params.MaxPrice)
+		query = query.Where("PRICE <= ?", params.MaxPrice)
 	}
 
 	// Pagination
@@ -51,7 +51,7 @@ func (repo *productRepository) GetAll(params models.ProductQueryParam) ([]models
 
 func (repo *productRepository) GetByID(id uint) (models.Product, error) {
 	var product models.Product
-	err := repo.db.Preload("Category").Where("id = ?", id).First(&product).Error
+	err := repo.db.Preload("Category").Where("ID = ?", id).First(&product).Error
 	return product, err
 }
 
@@ -60,9 +60,9 @@ func (repo *productRepository) Post(product models.Product) error {
 }
 
 func (repo *productRepository) Update(product *models.Product, id uint) error {
-	return repo.db.Model(&models.Product{}).Where("id = ?", id).Updates(product).Error
+	return repo.db.Model(&models.Product{}).Where("ID = ?", id).Updates(product).Error
 }
 
 func (repo *productRepository) Delete(id uint) error {
-	return repo.db.Where("id = ?", id).Delete(&models.Product{}).Error
+	return repo.db.Where("ID = ?", id).Delete(&models.Product{}).Error
 }

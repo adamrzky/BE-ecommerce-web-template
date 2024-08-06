@@ -30,7 +30,7 @@ func (repo *categoryRepository) GetAll() ([]models.Category, error) {
 
 func (repo *categoryRepository) GetByID(id uint) (models.Category, error) {
 	var category models.Category
-	err := repo.db.Where("id = ?", id).First(&category).Error
+	err := repo.db.Where("ID = ?", id).First(&category).Error
 	return category, err
 }
 
@@ -39,9 +39,9 @@ func (repo *categoryRepository) Post(category models.Category) error {
 }
 
 func (repo *categoryRepository) Update(category *models.Category, id uint) error {
-	return repo.db.Model(&models.Category{}).Where("id = ?", id).Updates(category).Error
+	return repo.db.Model(&models.Category{}).Where("ID = ?", id).Updates(category).Error
 }
 
 func (repo *categoryRepository) Delete(id uint) error {
-	return repo.db.Where("id = ?", id).Delete(&models.Category{}).Error
+	return repo.db.Where("ID = ?", id).Delete(&models.Category{}).Error
 }

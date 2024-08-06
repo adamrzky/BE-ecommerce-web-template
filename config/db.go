@@ -1,6 +1,7 @@
 package config
 
 import (
+	"BE-ecommerce-web-template/models"
 	"BE-ecommerce-web-template/utils"
 	"fmt"
 	"os"
@@ -48,7 +49,16 @@ func ConnectDataBase() *gorm.DB {
 
 	}
 
-	// db.AutoMigrate(&models.User{}, &models.Movie{}, &models.AgeRatingCategory{}, &models.Footballer{}, &models.Book{})
+	db.AutoMigrate(
+		&models.Role{},
+		&models.User{},
+		&models.Profile{},
+		&models.Category{},
+		&models.Product{},
+		&models.Transaction{},
+		&models.DetailTransaksi{},
+		&models.Review{},
+	)
 
 	return db
 

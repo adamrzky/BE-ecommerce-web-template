@@ -11,6 +11,8 @@ type Profile struct {
 	Address string    `gorm:"column:ADDRESS"`
 	Phone   string    `gorm:"column:PHONE"`
 	UserID  uint      `gorm:"column:user_id"`
+	CreatedAt     	time.Time				`json:"created_at"`
+	UpdatedAt		time.Time				`json:"updated_at"`
 
 	User User `gorm:"foreignKey:UserID"`
 }

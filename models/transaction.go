@@ -4,15 +4,15 @@ import "time"
 
 // Transaction represents a financial transaction in the system
 type Transaction struct {
-	ID         uint      `gorm:"primaryKey"`
-	TRX_ID     string    `gorm:"unique"`
-	PRODUCT_ID uint      `gorm:"index"`
-	USER_ID    uint      `gorm:"index"`
-	STATUS     int       `gorm:"type:int"`
-	TOTAL      int       `gorm:"type:int"`
-	PAY_DATE   time.Time `gorm:"type:datetime"`
-	CREATED_AT time.Time `gorm:"type:timestamp"`
-	UPDATED_AT time.Time `gorm:"type:timestamp on update current_timestamp"`
+	ID         uint      	`gorm:"primaryKey"`
+	TRX_ID     string    	`gorm:"unique"`
+	PRODUCT_ID uint      	`gorm:"index"`
+	USER_ID    uint      	`gorm:"index"`
+	STATUS     string       `gorm:"type:varchar(255)"`
+	TOTAL      int       	`gorm:"type:int"`
+	PAY_DATE   time.Time 	`gorm:"type:datetime"`
+	CREATED_AT time.Time 	`gorm:"type:timestamp"`
+	UPDATED_AT time.Time 	`gorm:"type:timestamp on update current_timestamp"`
 }
 
 // DetailTransaksi represents the detail of each transaction

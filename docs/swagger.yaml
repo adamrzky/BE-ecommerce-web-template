@@ -59,6 +59,57 @@ definitions:
       status:
         type: integer
     type: object
+  models.Profile:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      date:
+        type: string
+      gender:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      userID:
+        type: integer
+    type: object
+  models.Review:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      product_id:
+        type: integer
+      transaction_id:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.ReviewInput:
+    properties:
+      content:
+        type: string
+      product_id:
+        type: integer
+      transaction_id:
+        type: integer
+    required:
+    - content
+    - product_id
+    - transaction_id
+    type: object
   models.Role:
     properties:
       id:
@@ -123,6 +174,23 @@ definitions:
         type: string
       username:
         type: string
+    type: object
+  services.ProfileInput:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      date:
+        type: string
+      gender:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      user_id:
+        type: integer
     type: object
   services.RegisterInput:
     properties:
@@ -391,6 +459,46 @@ paths:
       summary: Login a user
       tags:
       - auth
+  /my-reviews:
+    get:
+      description: Get a list of reviews.
+      parameters:
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success fetch my reviews
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Review'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Get all reviews by current authenticated user.
+      tags:
+      - Review
   /product:
     get:
       consumes:
@@ -567,6 +675,185 @@ paths:
       summary: Update a product
       tags:
       - Product
+  /profiles:
+    post:
+      consumes:
+      - application/json
+      description: Creating a new Profile.
+      parameters:
+      - description: Profile input
+        in: body
+        name: profileInput
+        required: true
+        schema:
+          $ref: '#/definitions/services.ProfileInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile Created successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Profile'
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create New Profile.
+      tags:
+      - Profile
+  /profiles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Profile by its ID.
+      parameters:
+      - description: Profile ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile deleted successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Profile'
+              type: object
+        "404":
+          description: Profile not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete Profile by ID.
+      tags:
+      - Profile
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a Profile by its ID.
+      parameters:
+      - description: Profile ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile retrieved successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Profile'
+              type: object
+        "404":
+          description: Profile not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get Profile by ID.
+      tags:
+      - Profile
+    put:
+      consumes:
+      - application/json
+      description: Updating an existing Profile by ID.
+      parameters:
+      - description: Profile ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Profile input
+        in: body
+        name: profileInput
+        required: true
+        schema:
+          $ref: '#/definitions/services.ProfileInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile updated successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Profile'
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Profile not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Update Existing Profile.
+      tags:
+      - Profile
+  /profiles/{id}/user:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a Profile by its User ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile retrieved successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Profile'
+              type: object
+        "404":
+          description: Profile not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get Profile by User ID.
+      tags:
+      - Profile
   /register:
     post:
       consumes:
@@ -602,6 +889,209 @@ paths:
       summary: Register a new user
       tags:
       - auth
+  /reviews:
+    post:
+      description: Creating a new Review.
+      parameters:
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: the body to create a new Review
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/models.ReviewInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success create new review
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Review'
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Create New Review.
+      tags:
+      - Review
+  /reviews-product/{id}:
+    get:
+      description: Get a list of reviews.
+      parameters:
+      - description: product id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success fetch my reviews
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Review'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all reviews by current authenticated user.
+      tags:
+      - Review
+  /reviews/{id}:
+    delete:
+      description: Delete a Review by id (only authenticated user with valid user_id).
+      parameters:
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Review id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success delete a review
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Delete one Review.
+      tags:
+      - Review
+    get:
+      description: Get an Review by id.
+      parameters:
+      - description: Review id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success fetch review by id
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Review'
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get Review.
+      tags:
+      - Review
+    put:
+      description: Update Review by id (only authenticated user with valid user_id).
+      parameters:
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Review id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: the body to update review
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/models.ReviewInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success update review
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Review'
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Update Review.
+      tags:
+      - Review
   /transactions:
     post:
       consumes:

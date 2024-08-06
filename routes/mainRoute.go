@@ -54,10 +54,12 @@ func SetupRouter(db *gorm.DB, r *gin.Engine) {
 	// Swagger API Docs
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	// Category
 	categoryRepo := repositories.NewCategoryRepository(db)
 	categoryService := services.NewCategoryService(categoryRepo)
 	controllers.NewCategoryController(r, categoryService)
 
+	// Product
 	productRepo := repositories.NewProductRepository(db)
 	productService := services.NewProductService(productRepo)
 	controllers.NewProductController(r, productService)

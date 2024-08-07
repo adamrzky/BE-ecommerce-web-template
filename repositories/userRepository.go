@@ -2,15 +2,21 @@ package repositories
 
 import (
 	"BE-ecommerce-web-template/models"
+	"errors"
 
 	"gorm.io/gorm"
+)
+
+var (
+	ErrUserNotFound = errors.New("user not found")
 )
 
 type UserRepository interface {
 	GetUserByID(id uint) (models.User, error)
 	GetUserByUsername(username string) (models.User, error)
-	UpdateUser(user models.User) error
 	CreateUser(user models.User) error
+	UpdateUser(user models.User) error
+	DeleteUser(id uint) error
 }
 
 type userRepository struct {
@@ -24,6 +30,9 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 func (r *userRepository) GetUserByID(id uint) (models.User, error) {
 	var user models.User
 	if err := r.DB.Preload("Role").First(&user, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.User{}, ErrUserNotFound
+		}
 		return models.User{}, err
 	}
 	return user, nil
@@ -31,7 +40,10 @@ func (r *userRepository) GetUserByID(id uint) (models.User, error) {
 
 func (r *userRepository) GetUserByUsername(username string) (models.User, error) {
 	var user models.User
-	if err := r.DB.Preload("Role").Where("USERNAME = ?", username).First(&user).Error; err != nil {
+	if err := r.DB.Preload("Role").Where("username = ?", username).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.User{}, ErrUserNotFound
+		}
 		return models.User{}, err
 	}
 	return user, nil
@@ -43,4 +55,11 @@ func (r *userRepository) CreateUser(user models.User) error {
 
 func (r *userRepository) UpdateUser(user models.User) error {
 	return r.DB.Save(&user).Error
+}
+
+func (r *userRepository) DeleteUser(id uint) error {
+	if err := r.DB.Delete(&models.User{}, id).Error; err != nil {
+		return err
+	}
+	return nil
 }

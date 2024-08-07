@@ -428,7 +428,7 @@ const docTemplate = `{
             "get": {
                 "security": [
                     {
-                        "BearerToken": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Get a list of reviews.",
@@ -439,15 +439,6 @@ const docTemplate = `{
                     "Review"
                 ],
                 "summary": "Get all reviews by current authenticated user.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Success fetch my reviews",
@@ -1125,7 +1116,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "BearerToken": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Creating a new Review.",
@@ -1137,13 +1128,6 @@ const docTemplate = `{
                 ],
                 "summary": "Create New Review.",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "description": "the body to create a new Review",
                         "name": "Body",
@@ -1317,7 +1301,7 @@ const docTemplate = `{
             "put": {
                 "security": [
                     {
-                        "BearerToken": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Update Review by id (only authenticated user with valid user_id).",
@@ -1329,13 +1313,6 @@ const docTemplate = `{
                 ],
                 "summary": "Update Review.",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "Review id",
@@ -1395,7 +1372,7 @@ const docTemplate = `{
             "delete": {
                 "security": [
                     {
-                        "BearerToken": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Delete a Review by id (only authenticated user with valid user_id).",
@@ -1407,13 +1384,6 @@ const docTemplate = `{
                 ],
                 "summary": "Delete one Review.",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "Review id",

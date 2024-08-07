@@ -474,12 +474,6 @@ paths:
   /my-reviews:
     get:
       description: Get a list of reviews.
-      parameters:
-      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -507,7 +501,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       security:
-      - BearerToken: []
+      - BearerAuth: []
       summary: Get all reviews by current authenticated user.
       tags:
       - Review
@@ -909,11 +903,6 @@ paths:
     post:
       description: Creating a new Review.
       parameters:
-      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: the body to create a new Review
         in: body
         name: Body
@@ -945,7 +934,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       security:
-      - BearerToken: []
+      - BearerAuth: []
       summary: Create New Review.
       tags:
       - Review
@@ -991,11 +980,6 @@ paths:
     delete:
       description: Delete a Review by id (only authenticated user with valid user_id).
       parameters:
-      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Review id
         in: path
         name: id
@@ -1021,7 +1005,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       security:
-      - BearerToken: []
+      - BearerAuth: []
       summary: Delete one Review.
       tags:
       - Review
@@ -1063,11 +1047,6 @@ paths:
     put:
       description: Update Review by id (only authenticated user with valid user_id).
       parameters:
-      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Review id
         in: path
         name: id
@@ -1104,7 +1083,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       security:
-      - BearerToken: []
+      - BearerAuth: []
       summary: Update Review.
       tags:
       - Review

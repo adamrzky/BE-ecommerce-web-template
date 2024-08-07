@@ -23,13 +23,12 @@ func NewReviewController(service services.ReviewService) *reviewController {
 // @Summary Get all reviews by current authenticated user.
 // @Description Get a list of reviews.
 // @Tags Review
-// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
-// @Security BearerToken
 // @Produce json
 // @Success 200 {object} models.SuccessResponse{data=[]models.Review} "Success fetch my reviews"
 // @Failure 400 {object} models.ErrorResponse "Invalid input"
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
 // @Router /my-reviews [get]
 func (h *reviewController) GetMyReviews(c *gin.Context) {
 	var userID, _ = token.ExtractTokenID(c)
@@ -80,7 +79,7 @@ func (h *reviewController) GetReviewById(c *gin.Context) {
 	})	
 }
 
-// GetMyReviews godoc
+// GetReviewByProductId godoc
 // @Summary Get all reviews by current authenticated user.
 // @Description Get a list of reviews.
 // @Tags Review
@@ -115,13 +114,12 @@ func (h *reviewController) GetReviewByProductId(c *gin.Context) {
 // @Description Creating a new Review.
 // @Tags Review
 // @Produce json
-// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
-// @Security BearerToken
 // @Param Body body models.ReviewInput true "the body to create a new Review"
 // @Success 200 {object} models.SuccessResponse{data=models.Review} "Success create new review"
 // @Failure 400 {object} models.ErrorResponse "Invalid input"
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
 // @Router /reviews [post]
 func (h *reviewController) CreateReview(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
@@ -197,14 +195,13 @@ func (h *reviewController) CreateReview(c *gin.Context) {
 // @Description Update Review by id (only authenticated user with valid user_id).
 // @Tags Review
 // @Produce json
-// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Param id path string true "Review id"
-// @Security BearerToken
 // @Param Body body models.ReviewInput true "the body to update review"
 // @Success 200 {object} models.SuccessResponse{data=models.Review} "Success update review"
 // @Failure 400 {object} models.ErrorResponse "Invalid input"
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
 // @Router /reviews/{id} [put]
 func (h *reviewController) UpdateReview(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
@@ -298,13 +295,12 @@ func (h *reviewController) UpdateReview(c *gin.Context) {
 // @Description Delete a Review by id (only authenticated user with valid user_id).
 // @Tags Review
 // @Produce json
-// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Param id path string true "Review id"
-// @Security BearerToken
 // @Success 200 {object} models.SuccessResponse "Success delete a review"
 // @Failure 400 {object} models.ErrorResponse "Invalid input"
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
 // @Router /reviews/{id} [delete]
 func (h *reviewController) DeleteReview(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)

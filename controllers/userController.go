@@ -219,3 +219,28 @@ func (ctrl *UserController) DeleteUser(c *gin.Context) {
 
 	c.Status(http.StatusNoContent)
 }
+
+// GetAllUsers retrieves all users
+// @Summary Get all users
+// @Description Retrieve a list of all users
+// @Tags user
+// @Produce json
+// @Success 200 {object} models.SuccessResponse{data=[]models.User} "Users retrieved successfully"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /users [get]
+func (ctrl *UserController) GetAllUsers(c *gin.Context) {
+	users, err := ctrl.userService.GetAllUsers()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Status:  "error",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.SuccessResponse{
+		Status:  "success",
+		Message: "Users retrieved successfully",
+		Data:    users,
+	})
+}

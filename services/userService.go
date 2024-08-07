@@ -11,6 +11,7 @@ import (
 type UserService interface {
 	GetUserByID(id uint) (models.User, error)
 	GetUserByUsername(username string) (models.User, error)
+	GetAllUsers() ([]models.User, error)
 	CreateUser(input CreateUserInput) (models.User, error)
 	UpdateUser(id uint, input UpdateUserInput) (models.User, error)
 	DeleteUser(id uint) error
@@ -44,6 +45,10 @@ func (s *userService) GetUserByID(id uint) (models.User, error) {
 
 func (s *userService) GetUserByUsername(username string) (models.User, error) {
 	return s.UserRepo.GetUserByUsername(username)
+}
+
+func (s *userService) GetAllUsers() ([]models.User, error) {
+	return s.UserRepo.GetAllUsers()
 }
 
 func (s *userService) CreateUser(input CreateUserInput) (models.User, error) {

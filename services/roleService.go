@@ -7,6 +7,7 @@ import (
 
 type RoleService interface {
 	GetRoleByID(id uint) (models.Role, error)
+	GetAllRoles() ([]models.Role, error)
 	CreateRole(input CreateRoleInput) (models.Role, error)
 	UpdateRole(id uint, input UpdateRoleInput) (models.Role, error)
 	DeleteRole(id uint) error
@@ -30,6 +31,10 @@ type UpdateRoleInput struct {
 
 func (s *roleService) GetRoleByID(id uint) (models.Role, error) {
 	return s.RoleRepo.GetRoleByID(id)
+}
+
+func (s *roleService) GetAllRoles() ([]models.Role, error) {
+	return s.RoleRepo.GetAllRoles()
 }
 
 func (s *roleService) CreateRole(input CreateRoleInput) (models.Role, error) {

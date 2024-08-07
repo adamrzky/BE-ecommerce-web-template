@@ -176,3 +176,28 @@ func (ctrl *RoleController) DeleteRole(c *gin.Context) {
 
 	c.Status(http.StatusNoContent)
 }
+
+// GetAllRoles retrieves all roles
+// @Summary Get all roles
+// @Description Retrieve a list of all roles
+// @Tags role
+// @Produce json
+// @Success 200 {object} models.SuccessResponse{data=[]models.Role} "Roles retrieved successfully"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /roles [get]
+func (ctrl *RoleController) GetAllRoles(c *gin.Context) {
+	roles, err := ctrl.roleService.GetAllRoles()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Status:  "error",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.SuccessResponse{
+		Status:  "success",
+		Message: "Roles retrieved successfully",
+		Data:    roles,
+	})
+}

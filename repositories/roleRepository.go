@@ -13,6 +13,7 @@ var (
 
 type RoleRepository interface {
 	GetRoleByID(id uint) (models.Role, error)
+	GetAllRoles() ([]models.Role, error)
 	CreateRole(role models.Role) error
 	UpdateRole(role models.Role) error
 	DeleteRole(id uint) error
@@ -35,6 +36,14 @@ func (r *roleRepository) GetRoleByID(id uint) (models.Role, error) {
 		return models.Role{}, err
 	}
 	return role, nil
+}
+
+func (r *roleRepository) GetAllRoles() ([]models.Role, error) {
+	var roles []models.Role
+	if err := r.DB.Find(&roles).Error; err != nil {
+		return nil, err
+	}
+	return roles, nil
 }
 
 func (r *roleRepository) CreateRole(role models.Role) error {

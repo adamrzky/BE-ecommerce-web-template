@@ -97,6 +97,7 @@ func SetupRouter(db *gorm.DB, r *gin.Engine) {
 	r.POST("/users", middlewares.JwtAuthMiddleware(), userController.CreateUser)
 	r.PUT("/users/:id", middlewares.JwtAuthMiddleware(), userController.UpdateUser)
 	r.DELETE("/users/:id", middlewares.JwtAuthMiddleware(), userController.DeleteUser)
+	r.GET("/users", userController.GetAllUsers)
 
 	// Role
 	roleRepo := repositories.NewRoleRepository(db)
@@ -107,5 +108,6 @@ func SetupRouter(db *gorm.DB, r *gin.Engine) {
 	r.POST("/roles", middlewares.JwtAuthMiddleware(), roleController.CreateRole)
 	r.PUT("/roles/:id", middlewares.JwtAuthMiddleware(), roleController.UpdateRole)
 	r.DELETE("/roles/:id", middlewares.JwtAuthMiddleware(), roleController.DeleteRole)
+	r.GET("/roles", roleController.GetAllRoles)
 
 }

@@ -3,6 +3,7 @@ package controllers
 import (
 	"BE-ecommerce-web-template/models"
 	"BE-ecommerce-web-template/services"
+	"BE-ecommerce-web-template/utils/token"
 	"net/http"
 	"strconv"
 
@@ -23,6 +24,8 @@ func NewProfileController(profileService *services.ProfileService) *ProfileContr
 // @Tags Profile
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
+// @Security BearerToken
 // @Param profileInput body services.ProfileInput true "Profile input"
 // @Success 200 {object} models.SuccessResponse{data=models.Profile} "Profile Created successfully"
 // @Failure 400 {object} models.ErrorResponse "Invalid input"
@@ -30,6 +33,7 @@ func NewProfileController(profileService *services.ProfileService) *ProfileContr
 // @Router /profiles [post]
 func (ctrl *ProfileController) Create(c *gin.Context) {
 	var input services.ProfileInput
+	var userId, _ = token.ExtractTokenID(c)
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
 			Status:  "error",
@@ -38,7 +42,7 @@ func (ctrl *ProfileController) Create(c *gin.Context) {
 		return
 	}
 
-	profile, err := ctrl.profileService.Create(input)
+	profile, err := ctrl.profileService.Create(userId, input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
 			Status:  "error",
@@ -60,7 +64,9 @@ func (ctrl *ProfileController) Create(c *gin.Context) {
 // @Tags Profile
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Param id path int true "Profile ID"
+// @Security BearerToken
 // @Param profileInput body services.ProfileInput true "Profile input"
 // @Success 200 {object} models.SuccessResponse{data=models.Profile} "Profile updated successfully"
 // @Failure 400 {object} models.ErrorResponse "Invalid input"
@@ -69,6 +75,8 @@ func (ctrl *ProfileController) Create(c *gin.Context) {
 // @Router /profiles/{id} [put]
 func (ctrl *ProfileController) Update(c *gin.Context) {
 	profileIDStr := c.Param("id")
+	var userId, _ = token.ExtractTokenID(c)
+
 	profileID, err := strconv.ParseUint(profileIDStr, 10, 32)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
@@ -87,7 +95,7 @@ func (ctrl *ProfileController) Update(c *gin.Context) {
 		return
 	}
 
-	profile, err := ctrl.profileService.Update(uint(profileID), input)
+	profile, err := ctrl.profileService.Update(uint(profileID), userId, input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
 			Status:  "error",

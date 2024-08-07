@@ -20,10 +20,9 @@ type ProfileInput struct {
 	Date    time.Time `json:"date"`
 	Address string    `json:"address"`
 	Phone   string    `json:"phone"`
-	UserID  uint      `json:"user_id"`
 }
 
-func (s *ProfileService) Create(input ProfileInput) (models.Profile, error) {
+func (s *ProfileService) Create(userID uint, input ProfileInput) (models.Profile, error) {
 
 	profile := models.Profile{
 		Name:    input.Name,
@@ -32,7 +31,7 @@ func (s *ProfileService) Create(input ProfileInput) (models.Profile, error) {
 		City:    input.City,
 		Address: input.Address,
 		Phone:   input.Phone,
-		UserID:  input.UserID,
+		UserID:  userID,
 	}
 	err := s.ProfileRepo.CreateProfile(profile)
 	if err != nil {
@@ -41,7 +40,7 @@ func (s *ProfileService) Create(input ProfileInput) (models.Profile, error) {
 	return profile, nil
 }
 
-func (s *ProfileService) Update(profileID uint, input ProfileInput) (models.Profile, error) {
+func (s *ProfileService) Update(profileID uint, userID uint, input ProfileInput) (models.Profile, error) {
 	profile, err := s.ProfileRepo.GetProfileByID(profileID)
 	if err != nil {
 		return models.Profile{}, err
@@ -53,7 +52,8 @@ func (s *ProfileService) Update(profileID uint, input ProfileInput) (models.Prof
 	profile.City = input.City
 	profile.Address = input.Address
 	profile.Phone = input.Phone
-	profile.UserID = input.UserID
+	profile.UserID = userID
+	profile.UpdatedAt = time.Now()
 
 	err = s.ProfileRepo.UpdateProfile(profile)
 	if err != nil {

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -58,19 +59,32 @@ func (tc *TransactionController) GetTransactionByID(c *gin.Context) {
 // @Tags transactions
 // @Accept  json
 // @Produce  json
-// @Param transaction body models.Transaction true "Create Transaction"
+// @Param transaction body models.TransactionDTO true "Create Transaction"
 // @Success 201 {object} models.SuccessResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Router /transactions [post]
 func (tc *TransactionController) CreateTransaction(c *gin.Context) {
-	var transaction models.Transaction
-	if err := c.ShouldBindJSON(&transaction); err != nil {
+	var req models.TransactionDTO
+	if err := c.ShouldBindJSON(&req); err != nil {
+		fmt.Printf("Error in received data: %+v\n", err)
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
 			Status:  "error",
 			Message: "Invalid data provided",
 		})
 		return
 	}
+
+	// Convert DTO to Transaction model
+	transaction := models.Transaction{
+		TRX_ID:     req.TRX_ID,
+		PRODUCT_ID: req.PRODUCT_ID,
+		USER_ID:    req.USER_ID,
+		STATUS:     req.STATUS,
+		TOTAL:      req.TOTAL,
+		PAY_DATE:   req.PAY_DATE,
+		PAY_TYPE:   req.PAY_TYPE,
+	}
+
 	if err := tc.service.CreateTransaction(&transaction); err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
 			Status:  "error",
@@ -78,6 +92,7 @@ func (tc *TransactionController) CreateTransaction(c *gin.Context) {
 		})
 		return
 	}
+
 	c.JSON(http.StatusCreated, models.SuccessResponse{
 		Status:  "success",
 		Message: "Transaction created successfully",

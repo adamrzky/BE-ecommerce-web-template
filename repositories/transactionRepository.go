@@ -26,7 +26,11 @@ func NewTransactionRepository(db *gorm.DB) TransactionRepository {
 // FindByID finds a transaction by its id
 func (repo *transactionRepository) FindByID(id uint) (*models.Transaction, error) {
 	var transaction models.Transaction
-	result := repo.db.First(&transaction, id)
+	result := repo.db.Preload("Product", func(db *gorm.DB) *gorm.DB {
+		return db.Select("ID", "Name", "Price")
+	}).Preload("User", func(db *gorm.DB) *gorm.DB {
+		return db.Select("ID", "Username", "Email")
+	}).First(&transaction, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}

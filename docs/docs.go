@@ -482,6 +482,67 @@ const docTemplate = `{
                 }
             }
         },
+        "/mytransactions": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "retrieve all transactions associated with the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Get my transactions",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Transaction"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/product": {
             "get": {
                 "description": "Retrieve a list of all products with optional filtering by price and pagination",
@@ -763,6 +824,11 @@ const docTemplate = `{
         },
         "/profiles": {
             "post": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
                 "description": "Creating a new Profile.",
                 "consumes": [
                     "application/json"
@@ -775,6 +841,13 @@ const docTemplate = `{
                 ],
                 "summary": "Create New Profile.",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "Profile input",
                         "name": "profileInput",
@@ -875,6 +948,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
                 "description": "Updating an existing Profile by ID.",
                 "consumes": [
                     "application/json"
@@ -887,6 +965,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update Existing Profile.",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "Profile ID",
@@ -1730,7 +1815,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Transaction"
+                            "$ref": "#/definitions/models.TransactionDTO"
                         }
                     }
                 ],
@@ -2225,6 +2310,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.Category": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.CategoryRequest": {
             "type": "object",
             "required": [
@@ -2255,6 +2351,35 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Product": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "$ref": "#/definitions/models.Category"
+                },
+                "categoryID": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "imageURL": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
                 }
             }
         },
@@ -2430,20 +2555,23 @@ const docTemplate = `{
         "models.Transaction": {
             "type": "object",
             "properties": {
-                "created_AT": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
                 "pay_DATE": {
                     "type": "string"
                 },
+                "pay_TYPE": {
+                    "type": "string"
+                },
+                "product": {
+                    "$ref": "#/definitions/models.Product"
+                },
                 "product_ID": {
                     "type": "integer"
                 },
                 "status": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "total": {
                     "type": "integer"
@@ -2451,7 +2579,33 @@ const docTemplate = `{
                 "trx_ID": {
                     "type": "string"
                 },
-                "updated_AT": {
+                "user": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "user_ID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.TransactionDTO": {
+            "type": "object",
+            "properties": {
+                "pay_DATE": {
+                    "type": "string"
+                },
+                "pay_TYPE": {
+                    "type": "string"
+                },
+                "product_ID": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "trx_ID": {
                     "type": "string"
                 },
                 "user_ID": {
@@ -2555,9 +2709,6 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
                 }
             }
         },

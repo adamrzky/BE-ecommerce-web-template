@@ -110,4 +110,9 @@ func SetupRouter(db *gorm.DB, r *gin.Engine) {
 	r.DELETE("/roles/:id", middlewares.JwtAuthMiddleware(), roleController.DeleteRole)
 	r.GET("/roles", roleController.GetAllRoles)
 
+	// Dummy (temporary controller, will be deleted once merge into main)
+	dummyController := controllers.NewDummyController()
+
+	r.GET("/my-claims", middlewares.JwtAuthMiddleware(), dummyController.MyClaims)                            // Sample to get claims from jwt
+	r.GET("/admin-and-dev", middlewares.JwtAuthMiddleware("Admin", "Developer"), dummyController.AdminAndDev) // Sample to protect endpoint by multiple roles
 }

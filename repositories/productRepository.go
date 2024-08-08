@@ -31,6 +31,11 @@ func (repo *productRepository) GetAll(params models.ProductQueryParam) ([]models
 		query = query.Where("NAME LIKE ?", "%"+params.ProductName+"%")
 	}
 
+	// Category filter
+	if params.Category != 0 {
+		query = query.Where("CATEGORY_ID = ?", params.Category)
+	}
+
 	// Price filter
 	if params.MinPrice > 0 {
 		query = query.Where("PRICE >= ?", params.MinPrice)

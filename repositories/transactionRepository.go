@@ -9,6 +9,7 @@ import (
 // TransactionRepository defines the interface for transaction database operations
 type TransactionRepository interface {
 	FindByID(id uint) (*models.Transaction, error)
+	GetMyTransactions(userID int) ([]models.Transaction, error)
 	Create(transaction *models.Transaction) error
 	Update(transaction *models.Transaction) error
 	Delete(id uint) error
@@ -23,10 +24,24 @@ func NewTransactionRepository(db *gorm.DB) TransactionRepository {
 	return &transactionRepository{db}
 }
 
+// GetMyTransactions retrieves all transactions associated with a user ID
+func (r *transactionRepository) GetMyTransactions(userID int) ([]models.Transaction, error) {
+	var transactions []models.Transaction
+	err := r.db.Where("user_id = ?", userID).Find(&transactions).Error
+	if err != nil {
+		return nil, err
+	}
+	return transactions, nil
+}
+
 // FindByID finds a transaction by its id
 func (repo *transactionRepository) FindByID(id uint) (*models.Transaction, error) {
 	var transaction models.Transaction
-	result := repo.db.First(&transaction, id)
+	result := repo.db.Preload("Product", func(db *gorm.DB) *gorm.DB {
+		return db.Select("ID", "Name", "Price")
+	}).Preload("User", func(db *gorm.DB) *gorm.DB {
+		return db.Select("ID", "Username", "Email")
+	}).First(&transaction, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}

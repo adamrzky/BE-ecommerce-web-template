@@ -50,7 +50,7 @@ func(s *reviewService) GetMyReview(UserID int) ([]models.ReviewResponse, error) 
 			Transaction: models.SimpleTrxResponse{
 				ID: int(review.Transaction.ID),
 				TransactionID: review.Transaction.TRX_ID,
-				Status: review.Transaction.STATUS,
+				Status: int(review.Transaction.STATUS),
 			},
 		}
 		reviewsResponses = append(reviewsResponses, reviewData)

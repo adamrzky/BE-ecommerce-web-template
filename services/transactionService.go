@@ -11,6 +11,7 @@ type TransactionService interface {
 	CreateTransaction(transaction *models.Transaction) error
 	UpdateTransaction(transaction *models.Transaction) error
 	DeleteTransaction(id uint) error
+	GetMyTransactions(userID int) ([]models.Transaction, error)
 }
 
 type transactionService struct {
@@ -33,17 +34,24 @@ func (s *transactionService) GetTransactionByID(id uint) (*models.Transaction, e
 
 // CreateTransaction creates a new transaction
 func (s *transactionService) CreateTransaction(transaction *models.Transaction) error {
-	// Here, you could add business logic (e.g., validation, enrichment) before saving
 	return s.repo.Create(transaction)
 }
 
 // UpdateTransaction updates an existing transaction
 func (s *transactionService) UpdateTransaction(transaction *models.Transaction) error {
-	// Additional business logic can be handled here
 	return s.repo.Update(transaction)
 }
 
 // DeleteTransaction deletes a transaction by its ID
 func (s *transactionService) DeleteTransaction(id uint) error {
 	return s.repo.Delete(id)
+}
+
+// GetMyTransactions retrieves all transactions associated with a user ID
+func (s *transactionService) GetMyTransactions(userID int) ([]models.Transaction, error) {
+	transactions, err := s.repo.GetMyTransactions(userID)
+	if err != nil {
+		return nil, err
+	}
+	return transactions, nil
 }

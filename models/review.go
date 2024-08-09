@@ -48,7 +48,7 @@ type SimpleProductResponse struct {
 type SimpleTrxResponse struct {
 	ID				int 	`json:"id"`
 	TransactionID	string	`json:"transaction_id"`
-	Status			string	`json:"status"`
+	Status			int	`json:"status"`
 }
 
 func (Review) TableName() string {

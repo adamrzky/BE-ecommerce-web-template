@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"BE-ecommerce-web-template/models"
 	"BE-ecommerce-web-template/services"
+	"BE-ecommerce-web-template/utils/token"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,6 +18,43 @@ type TransactionController struct {
 
 func NewTransactionController(service services.TransactionService) *TransactionController {
 	return &TransactionController{service: service}
+}
+
+// GetMyTransactions godoc
+// @Summary Get all transactions by current authenticated user.
+// @Description Retrieve a list of transactions associated with the authenticated user.
+// @Tags Transaction
+// @Produce json
+// @Success 200 {object} models.SuccessResponse{data=[]models.Transaction} "Success fetch my transactions"
+// @Failure 400 {object} models.ErrorResponse "Invalid input"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /my-transactions [get]
+func (c *TransactionController) GetMyTransactions(ctx *gin.Context) {
+	userID, err := token.ExtractTokenID(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, models.ErrorResponse{
+			Status:  "error",
+			Message: "User not authenticated or invalid token",
+		})
+		return
+	}
+
+	transactions, err := c.service.GetMyTransactions(int(userID))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Status:  "error",
+			Message: "Failed to retrieve transactions",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, models.SuccessResponse{
+		Status:  "success",
+		Message: "Success fetch my transactions",
+		Data:    transactions,
+	})
 }
 
 // GetTransactionByID godoc
@@ -58,19 +97,32 @@ func (tc *TransactionController) GetTransactionByID(c *gin.Context) {
 // @Tags transactions
 // @Accept  json
 // @Produce  json
-// @Param transaction body models.Transaction true "Create Transaction"
+// @Param transaction body models.TransactionDTO true "Create Transaction"
 // @Success 201 {object} models.SuccessResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Router /transactions [post]
 func (tc *TransactionController) CreateTransaction(c *gin.Context) {
-	var transaction models.Transaction
-	if err := c.ShouldBindJSON(&transaction); err != nil {
+	var req models.TransactionDTO
+	if err := c.ShouldBindJSON(&req); err != nil {
+		fmt.Printf("Error in received data: %+v\n", err)
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
 			Status:  "error",
 			Message: "Invalid data provided",
 		})
 		return
 	}
+
+	// Convert DTO to Transaction model
+	transaction := models.Transaction{
+		TRX_ID:     req.TRX_ID,
+		PRODUCT_ID: req.PRODUCT_ID,
+		USER_ID:    req.USER_ID,
+		STATUS:     req.STATUS,
+		TOTAL:      req.TOTAL,
+		PAY_DATE:   req.PAY_DATE,
+		PAY_TYPE:   req.PAY_TYPE,
+	}
+
 	if err := tc.service.CreateTransaction(&transaction); err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
 			Status:  "error",
@@ -78,6 +130,7 @@ func (tc *TransactionController) CreateTransaction(c *gin.Context) {
 		})
 		return
 	}
+
 	c.JSON(http.StatusCreated, models.SuccessResponse{
 		Status:  "success",
 		Message: "Transaction created successfully",

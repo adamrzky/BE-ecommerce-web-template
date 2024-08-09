@@ -1,5 +1,12 @@
 basePath: /
 definitions:
+  models.Category:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   models.CategoryRequest:
     properties:
       name:
@@ -20,6 +27,25 @@ definitions:
         type: string
       status:
         type: string
+    type: object
+  models.Product:
+    properties:
+      category:
+        $ref: '#/definitions/models.Category'
+      categoryID:
+        type: integer
+      id:
+        type: integer
+      imageURL:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      slug:
+        type: string
+      status:
+        type: integer
     type: object
   models.ProductRequest:
     properties:
@@ -135,21 +161,40 @@ definitions:
     type: object
   models.Transaction:
     properties:
-      created_AT:
-        type: string
       id:
         type: integer
       pay_DATE:
         type: string
+      pay_TYPE:
+        type: string
+      product:
+        $ref: '#/definitions/models.Product'
       product_ID:
         type: integer
       status:
-        type: string
+        type: integer
       total:
         type: integer
       trx_ID:
         type: string
-      updated_AT:
+      user:
+        $ref: '#/definitions/models.User'
+      user_ID:
+        type: integer
+    type: object
+  models.TransactionDTO:
+    properties:
+      pay_DATE:
+        type: string
+      pay_TYPE:
+        type: string
+      product_ID:
+        type: integer
+      status:
+        type: integer
+      total:
+        type: integer
+      trx_ID:
         type: string
       user_ID:
         type: integer
@@ -217,8 +262,6 @@ definitions:
         type: string
       phone:
         type: string
-      user_id:
-        type: integer
     type: object
   services.RegisterInput:
     properties:
@@ -537,6 +580,42 @@ paths:
       summary: Get all reviews by current authenticated user.
       tags:
       - Review
+  /mytransactions:
+    get:
+      consumes:
+      - application/json
+      description: retrieve all transactions associated with the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Transaction'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get my transactions
+      tags:
+      - transactions
   /product:
     get:
       consumes:
@@ -723,6 +802,11 @@ paths:
       - application/json
       description: Creating a new Profile.
       parameters:
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Profile input
         in: body
         name: profileInput
@@ -749,6 +833,8 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - BearerToken: []
       summary: Create New Profile.
       tags:
       - Profile
@@ -824,6 +910,11 @@ paths:
       - application/json
       description: Updating an existing Profile by ID.
       parameters:
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Profile ID
         in: path
         name: id
@@ -859,6 +950,8 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - BearerToken: []
       summary: Update Existing Profile.
       tags:
       - Profile
@@ -1305,7 +1398,7 @@ paths:
         name: transaction
         required: true
         schema:
-          $ref: '#/definitions/models.Transaction'
+          $ref: '#/definitions/models.TransactionDTO'
       produces:
       - application/json
       responses:

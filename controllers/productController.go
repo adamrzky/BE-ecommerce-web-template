@@ -61,6 +61,7 @@ func (controller *productController) post(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param productName query string false "Product name filter"
+// @Param category query int false "Category filter"
 // @Param minPrice query float32 false "Minimum price filter"
 // @Param maxPrice query float32 false "Maximum price filter"
 // @Param limit query int true "Limit the number of results returned" mininum(1)

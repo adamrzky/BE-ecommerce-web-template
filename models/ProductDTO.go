@@ -23,6 +23,7 @@ type (
 
 	ProductQueryParam struct {
 		ProductName string  `form:"productName"`
+		Category    uint    `form:"category"`
 		MinPrice    float32 `form:"minPrice"`
 		MaxPrice    float32 `form:"maxPrice"`
 		Limit       int     `form:"limit" validate:"required,min=1"`

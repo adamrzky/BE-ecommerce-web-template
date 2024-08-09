@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"BE-ecommerce-web-template/middlewares"
 	"BE-ecommerce-web-template/models"
 	"BE-ecommerce-web-template/services"
 	"BE-ecommerce-web-template/utils/resp"
+	"BE-ecommerce-web-template/utils/role"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,11 +19,11 @@ func NewCategoryController(e *gin.Engine, cs services.CategoryService) {
 
 	categoryGroup := e.Group("/category")
 	{
-		categoryGroup.POST("", handler.post)
+		categoryGroup.POST("", middlewares.JwtAuthMiddleware(role.Admin), handler.post)
 		categoryGroup.GET("", handler.getAll)
 		categoryGroup.GET("/:categoryID", handler.getByID)
-		categoryGroup.PUT("/:categoryID", handler.update)
-		categoryGroup.DELETE("/:categoryID", handler.delete)
+		categoryGroup.PUT("/:categoryID", middlewares.JwtAuthMiddleware(role.Admin), handler.update)
+		categoryGroup.DELETE("/:categoryID", middlewares.JwtAuthMiddleware(role.Admin), handler.delete)
 
 	}
 }

@@ -73,7 +73,8 @@ func (s *AuthService) Login(input LoginInput) (string, models.User, error) {
 		return "", models.User{}, errors.New("invalid username or password")
 	}
 
-	tokenStr, err := token.GenerateToken(user.ID)
+	// Generate token with id, name and role to extract with
+	tokenStr, err := token.GenerateToken(user.ID, user.Username, user.Role.Name)
 	if err != nil {
 		return "", models.User{}, err
 	}

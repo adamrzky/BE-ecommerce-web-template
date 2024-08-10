@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"BE-ecommerce-web-template/middlewares"
 	"BE-ecommerce-web-template/models"
 	"BE-ecommerce-web-template/services"
 	"BE-ecommerce-web-template/utils/resp"
+	"BE-ecommerce-web-template/utils/role"
+	"BE-ecommerce-web-template/utils/token"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,12 +20,14 @@ func NewProductController(e *gin.Engine, cs services.ProductService) {
 
 	productGroup := e.Group("/product")
 	{
-		productGroup.POST("", handler.post)
+		productGroup.POST("", middlewares.JwtAuthMiddleware(role.Admin, role.Developer), handler.post)
 		productGroup.GET("", handler.getAll)
 		productGroup.GET("/:productID", handler.getByID)
-		productGroup.PUT("/:productID", handler.update)
-		productGroup.DELETE("/:productID", handler.delete)
-
+		productGroup.GET("/slug/:productSlug", handler.getBySlug)
+		productGroup.PUT("/:productID", middlewares.JwtAuthMiddleware(role.Admin, role.Developer), handler.update)
+		productGroup.DELETE("/:productID", middlewares.JwtAuthMiddleware(role.Admin, role.Developer), handler.delete)
+		productGroup.PUT("/:productID/likes", middlewares.JwtAuthMiddleware(), handler.likeProduct)
+		productGroup.DELETE("/:productID/likes", middlewares.JwtAuthMiddleware(), handler.dislikeProduct)
 	}
 }
 
@@ -108,6 +113,18 @@ func (controller *productController) getByID(c *gin.Context) {
 	resp.NewResponseSuccess(c, product, "data received")
 }
 
+func (controller *productController) getBySlug(c *gin.Context) {
+	slug := c.Param("productSlug")
+
+	product, err := controller.productService.GetBySlug(slug)
+	if err != nil {
+		resp.NewResponseError(c, err.Error())
+		return
+	}
+
+	resp.NewResponseSuccess(c, product, "data received")
+}
+
 // update modifies an existing product
 // @Summary Update a product
 // @Description Update an existing product with the provided details
@@ -156,4 +173,38 @@ func (controller *productController) delete(c *gin.Context) {
 	}
 
 	resp.NewResponseSuccess(c, nil, "data deleted")
+}
+
+func (controller *productController) likeProduct(c *gin.Context) {
+	productID := c.Param("productID")
+
+	claims, err := token.ExtractClaims(c)
+	if err != nil {
+		resp.NewResponseError(c, err.Error())
+		return
+	}
+
+	if err := controller.productService.PostLike(claims.ID, productID); err != nil {
+		resp.NewResponseError(c, err.Error())
+		return
+	}
+
+	resp.NewResponseSuccess(c, nil, "success like the product")
+}
+
+func (controller *productController) dislikeProduct(c *gin.Context) {
+	productID := c.Param("productID")
+
+	claims, err := token.ExtractClaims(c)
+	if err != nil {
+		resp.NewResponseError(c, err.Error())
+		return
+	}
+
+	if err := controller.productService.DeleteLike(claims.ID, productID); err != nil {
+		resp.NewResponseError(c, err.Error())
+		return
+	}
+
+	resp.NewResponseSuccess(c, nil, "success dislike the product")
 }

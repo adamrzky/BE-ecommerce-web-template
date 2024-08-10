@@ -10,16 +10,15 @@ type Profile struct {
 	Date      time.Time `gorm:"column:DATE"`
 	Address   string    `gorm:"column:ADDRESS"`
 	Phone     string    `gorm:"column:PHONE"`
-	UserID    uint      `gorm:"column:user_id"`
+	UserID    int       `gorm:"column:USER_ID" json:"user_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-
-	User User `gorm:"foreignKey:UserID"`
+	User      User      `json:"-"`
 }
 
 type ProfileResponse struct {
-	ID        uint               `json:"id"`
-	UserID    uint               `json:"user_id"`
+	ID        int                `json:"id"`
+	UserID    int                `json:"user_id"`
 	Name      string             `json:"name"`
 	Gender    string             `json:"gender"`
 	City      string             `json:"city"`

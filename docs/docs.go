@@ -426,20 +426,22 @@ const docTemplate = `{
         },
         "/my-profiles": {
             "get": {
-                "description": "Retrieve a Profile by current authenticated user.",
-                "consumes": [
-                    "application/json"
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
                 ],
+                "description": "Get a list of profiles.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Profile"
                 ],
-                "summary": "Get all Profiles by current authenticated user.",
+                "summary": "Get all profiles by current authenticated user.",
                 "responses": {
                     "200": {
-                        "description": "Profile retrieved successfully",
+                        "description": "Success fetch my profiles",
                         "schema": {
                             "allOf": [
                                 {
@@ -449,15 +451,24 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/models.Profile"
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Profile"
+                                            }
                                         }
                                     }
                                 }
                             ]
                         }
                     },
-                    "404": {
-                        "description": "Profile not found",
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -944,21 +955,18 @@ const docTemplate = `{
         },
         "/profiles/{id}": {
             "get": {
-                "description": "Retrieve a Profile by its ID.",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Get an Profile by id.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Profile"
                 ],
-                "summary": "Get Profile by ID.",
+                "summary": "Get Profile.",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Profile ID",
+                        "type": "string",
+                        "description": "Profile id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -966,7 +974,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Profile retrieved successfully",
+                        "description": "Success fetch Profile by id",
                         "schema": {
                             "allOf": [
                                 {
@@ -983,8 +991,14 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "404": {
-                        "description": "Profile not found",
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -1079,21 +1093,23 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete a Profile by its ID.",
-                "consumes": [
-                    "application/json"
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
                 ],
+                "description": "Delete a Profile by id (only authenticated user with valid user_id).",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Profile"
                 ],
-                "summary": "Delete Profile by ID.",
+                "summary": "Delete one Profile.",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Profile ID",
+                        "type": "string",
+                        "description": "Profile id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1101,81 +1117,19 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Profile deleted successfully",
+                        "description": "Success delete a profile",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/models.SuccessResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/models.Profile"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/models.SuccessResponse"
                         }
                     },
-                    "404": {
-                        "description": "Profile not found",
+                    "400": {
+                        "description": "Invalid input",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/profiles/{id}/user": {
-            "get": {
-                "description": "Retrieve a Profile by its User ID.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Profile"
-                ],
-                "summary": "Get Profile by User ID.",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Profile retrieved successfully",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/models.SuccessResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/models.Profile"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "404": {
-                        "description": "Profile not found",
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -2520,10 +2474,7 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
-                "user": {
-                    "$ref": "#/definitions/models.User"
-                },
-                "userID": {
+                "user_id": {
                     "type": "integer"
                 }
             }

@@ -105,9 +105,7 @@ definitions:
         type: string
       updated_at:
         type: string
-      user:
-        $ref: '#/definitions/models.User'
-      userID:
+      user_id:
         type: integer
     type: object
   models.Review:
@@ -548,30 +546,36 @@ paths:
       - auth
   /my-profiles:
     get:
-      consumes:
-      - application/json
-      description: Retrieve a Profile by current authenticated user.
+      description: Get a list of profiles.
       produces:
       - application/json
       responses:
         "200":
-          description: Profile retrieved successfully
+          description: Success fetch my profiles
           schema:
             allOf:
             - $ref: '#/definitions/models.SuccessResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/models.Profile'
+                  items:
+                    $ref: '#/definitions/models.Profile'
+                  type: array
               type: object
-        "404":
-          description: Profile not found
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/models.ErrorResponse'
         "500":
           description: Internal server error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Get all Profiles by current authenticated user.
+      security:
+      - BearerAuth: []
+      summary: Get all profiles by current authenticated user.
       tags:
       - Profile
   /my-reviews:
@@ -871,53 +875,50 @@ paths:
       - Profile
   /profiles/{id}:
     delete:
-      consumes:
-      - application/json
-      description: Delete a Profile by its ID.
+      description: Delete a Profile by id (only authenticated user with valid user_id).
       parameters:
-      - description: Profile ID
+      - description: Profile id
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
         "200":
-          description: Profile deleted successfully
+          description: Success delete a profile
           schema:
-            allOf:
-            - $ref: '#/definitions/models.SuccessResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/models.Profile'
-              type: object
-        "404":
-          description: Profile not found
+            $ref: '#/definitions/models.SuccessResponse'
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/models.ErrorResponse'
         "500":
           description: Internal server error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Delete Profile by ID.
+      security:
+      - BearerAuth: []
+      summary: Delete one Profile.
       tags:
       - Profile
     get:
-      consumes:
-      - application/json
-      description: Retrieve a Profile by its ID.
+      description: Get an Profile by id.
       parameters:
-      - description: Profile ID
+      - description: Profile id
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
         "200":
-          description: Profile retrieved successfully
+          description: Success fetch Profile by id
           schema:
             allOf:
             - $ref: '#/definitions/models.SuccessResponse'
@@ -925,15 +926,19 @@ paths:
                 data:
                   $ref: '#/definitions/models.Profile'
               type: object
-        "404":
-          description: Profile not found
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/models.ErrorResponse'
         "500":
           description: Internal server error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Get Profile by ID.
+      summary: Get Profile.
       tags:
       - Profile
     put:
@@ -984,40 +989,6 @@ paths:
       security:
       - BearerToken: []
       summary: Update Existing Profile.
-      tags:
-      - Profile
-  /profiles/{id}/user:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve a Profile by its User ID.
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Profile retrieved successfully
-          schema:
-            allOf:
-            - $ref: '#/definitions/models.SuccessResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/models.Profile'
-              type: object
-        "404":
-          description: Profile not found
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Get Profile by User ID.
       tags:
       - Profile
   /register:

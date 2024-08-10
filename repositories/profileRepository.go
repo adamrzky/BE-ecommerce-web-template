@@ -7,11 +7,11 @@ import (
 )
 
 type ProfileRepository interface {
-	GetProfileByID(id uint) (models.Profile, error)
-	UpdateProfile(profile models.Profile) error
+	GetProfileByID(id int) (models.Profile, error)
+	GetMyProfile(userID int) (models.Profile, error)
 	CreateProfile(profile models.Profile) error
-	DeleteProfile(id uint) (models.Profile, error)
-	GetProfileByUserID(userID uint) (models.Profile, error)
+	UpdateProfile(profile models.Profile) error
+	DeleteProfile(id int) error
 }
 
 type profileRepository struct {
@@ -22,18 +22,20 @@ func NewProfileRepository(db *gorm.DB) ProfileRepository {
 	return &profileRepository{DB: db}
 }
 
-func (r *profileRepository) GetProfileByID(id uint) (models.Profile, error) {
+func (r *profileRepository) GetProfileByID(id int) (models.Profile, error) {
 	var profile models.Profile
-	if err := r.DB.Preload("User").First(&profile, id).Error; err != nil {
-		return models.Profile{}, err
+	err := r.DB.Where("id = ?", id).Preload("User").First(&profile).Error
+	if err != nil {
+		return profile, err
 	}
-	return profile, nil
+	return profile, err
 }
 
-func (r *profileRepository) GetProfileByUserID(userID uint) (models.Profile, error) {
+func (r *profileRepository) GetMyProfile(userID int) (models.Profile, error) {
 	var profile models.Profile
-	if err := r.DB.Preload("User").Where("user_id = ?", userID).First(&profile).Error; err != nil {
-		return models.Profile{}, err
+	err := r.DB.Where("user_id = ?", userID).Preload("User").Find(&profile).Error
+	if err != nil {
+		return profile, err
 	}
 	return profile, nil
 }
@@ -46,14 +48,6 @@ func (r *profileRepository) UpdateProfile(profile models.Profile) error {
 	return r.DB.Save(&profile).Error
 }
 
-func (r *profileRepository) DeleteProfile(id uint) (models.Profile, error) {
-	var profile models.Profile
-	if err := r.DB.First(&profile, id).Error; err != nil {
-		return models.Profile{}, err
-	}
-
-	if err := r.DB.Delete(&profile).Error; err != nil {
-		return models.Profile{}, err
-	}
-	return profile, nil
+func (r *profileRepository) DeleteProfile(id int) error {
+	return r.DB.Where("id = ?", id).Delete(&models.Profile{}).Error
 }

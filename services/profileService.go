@@ -2,12 +2,24 @@ package services
 
 import (
 	"BE-ecommerce-web-template/models"
-	repository "BE-ecommerce-web-template/repositories"
+	"BE-ecommerce-web-template/repositories"
 	"time"
 )
 
-type ProfileService struct {
-	ProfileRepo repository.ProfileRepository
+type ProfileService interface {
+	GetProfileByID(id int) (models.ProfileResponse, error)
+	Update(profileID int, userID int, input ProfileInput) (models.Profile, error)
+	Create(userID int, input ProfileInput) (models.Profile, error)
+	DeleteProfile(id int) error
+	GetMyProfile(userID int) (models.ProfileResponse, error)
+}
+
+type profileService struct {
+	ProfileRepo repositories.ProfileRepository
+}
+
+func NewProfileService(repo repositories.ProfileRepository) ProfileService {
+	return &profileService{ProfileRepo: repo}
 }
 
 type ProfileInput struct {
@@ -19,8 +31,7 @@ type ProfileInput struct {
 	Phone   string    `json:"phone"`
 }
 
-func (s *ProfileService) Create(userID uint, input ProfileInput) (models.Profile, error) {
-
+func (s *profileService) Create(userID int, input ProfileInput) (models.Profile, error) {
 	profile := models.Profile{
 		Name:    input.Name,
 		Gender:  input.Gender,
@@ -30,14 +41,12 @@ func (s *ProfileService) Create(userID uint, input ProfileInput) (models.Profile
 		Phone:   input.Phone,
 		UserID:  userID,
 	}
+
 	err := s.ProfileRepo.CreateProfile(profile)
-	if err != nil {
-		return models.Profile{}, err
-	}
-	return profile, nil
+	return profile, err
 }
 
-func (s *ProfileService) Update(profileID uint, userID uint, input ProfileInput) (models.Profile, error) {
+func (s *profileService) Update(profileID int, userID int, input ProfileInput) (models.Profile, error) {
 	profile, err := s.ProfileRepo.GetProfileByID(profileID)
 	if err != nil {
 		return models.Profile{}, err
@@ -53,20 +62,17 @@ func (s *ProfileService) Update(profileID uint, userID uint, input ProfileInput)
 	profile.UpdatedAt = time.Now()
 
 	err = s.ProfileRepo.UpdateProfile(profile)
-	if err != nil {
-		return models.Profile{}, err
-	}
-	return profile, nil
+	return profile, err
 }
 
-func (s *ProfileService) GetProfileByID(profileID uint) (models.ProfileResponse, error) {
+func (s *profileService) GetProfileByID(profileID int) (models.ProfileResponse, error) {
 	profile, err := s.ProfileRepo.GetProfileByID(profileID)
 	if err != nil {
 		return models.ProfileResponse{}, err
 	}
 
-	profileResponse := models.ProfileResponse{
-		ID:        profile.ID,
+	profilesResponse := models.ProfileResponse{
+		ID:        int(profile.ID),
 		UserID:    profile.UserID,
 		Name:      profile.Name,
 		Gender:    profile.Gender,
@@ -83,17 +89,17 @@ func (s *ProfileService) GetProfileByID(profileID uint) (models.ProfileResponse,
 		},
 	}
 
-	return profileResponse, nil
+	return profilesResponse, nil
 }
 
-func (s *ProfileService) GetMyProfile(userID uint) (models.ProfileResponse, error) {
-	profile, err := s.ProfileRepo.GetProfileByUserID(userID)
+func (s *profileService) GetMyProfile(userID int) (models.ProfileResponse, error) {
+	profile, err := s.ProfileRepo.GetMyProfile(userID)
 	if err != nil {
 		return models.ProfileResponse{}, err
 	}
 
-	profileResponse := models.ProfileResponse{
-		ID:        profile.ID,
+	profilesResponse := models.ProfileResponse{
+		ID:        int(profile.ID),
 		UserID:    profile.UserID,
 		Name:      profile.Name,
 		Gender:    profile.Gender,
@@ -110,9 +116,9 @@ func (s *ProfileService) GetMyProfile(userID uint) (models.ProfileResponse, erro
 		},
 	}
 
-	return profileResponse, nil
+	return profilesResponse, nil
 }
 
-func (s *ProfileService) DeleteProfile(id uint) (models.Profile, error) {
+func (s *profileService) DeleteProfile(id int) error {
 	return s.ProfileRepo.DeleteProfile(id)
 }

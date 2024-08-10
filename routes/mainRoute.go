@@ -80,15 +80,13 @@ func SetupRouter(db *gorm.DB, r *gin.Engine) {
 
 	//Profile
 	ProfileRepo := repositories.NewProfileRepository(db)
-	profileService := &services.ProfileService{
-		ProfileRepo: ProfileRepo,
-	}
+	profileService := services.NewProfileService(ProfileRepo)
 	profileController := controllers.NewProfileController(profileService)
 	r.GET("/profiles/:id", profileController.GetByID)
 	r.POST("/profiles", profileController.Create)
-	r.GET("/my-profiles", profileController.GetMyProfile)
+	r.GET("/my-profiles", profileController.GetMyProfiles)
 	r.PUT("/profiles/:id", profileController.Update)
-	r.DELETE("/profiles/:id", profileController.Delete)
+	r.DELETE("/profiles/:id", profileController.DeleteProfile)
 
 	// User
 	userService := services.NewUserService(userRepo)

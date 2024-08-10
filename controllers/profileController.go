@@ -8,13 +8,14 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type ProfileController struct {
-	profileService *services.ProfileService
+	profileService services.ProfileService
 }
 
-func NewProfileController(profileService *services.ProfileService) *ProfileController {
+func NewProfileController(profileService services.ProfileService) *ProfileController {
 	return &ProfileController{profileService: profileService}
 }
 
@@ -33,7 +34,7 @@ func NewProfileController(profileService *services.ProfileService) *ProfileContr
 // @Router /profiles [post]
 func (ctrl *ProfileController) Create(c *gin.Context) {
 	var input services.ProfileInput
-	var userId, _ = token.ExtractTokenID(c)
+	userId, _ := token.ExtractTokenID(c)
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
 			Status:  "error",
@@ -42,7 +43,7 @@ func (ctrl *ProfileController) Create(c *gin.Context) {
 		return
 	}
 
-	profile, err := ctrl.profileService.Create(userId, input)
+	profile, err := ctrl.profileService.Create(int(userId), input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
 			Status:  "error",
@@ -75,7 +76,7 @@ func (ctrl *ProfileController) Create(c *gin.Context) {
 // @Router /profiles/{id} [put]
 func (ctrl *ProfileController) Update(c *gin.Context) {
 	profileIDStr := c.Param("id")
-	var userId, _ = token.ExtractTokenID(c)
+	userId, _ := token.ExtractTokenID(c)
 
 	profileID, err := strconv.ParseUint(profileIDStr, 10, 32)
 	if err != nil {
@@ -95,7 +96,7 @@ func (ctrl *ProfileController) Update(c *gin.Context) {
 		return
 	}
 
-	profile, err := ctrl.profileService.Update(uint(profileID), userId, input)
+	profile, err := ctrl.profileService.Update(int(profileID), int(userId), input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
 			Status:  "error",
@@ -111,31 +112,23 @@ func (ctrl *ProfileController) Update(c *gin.Context) {
 	})
 }
 
-// GetProfileByID godoc
-// @Summary Get Profile by ID.
-// @Description Retrieve a Profile by its ID.
+// GetProfileById godoc
+// @Summary Get Profile.
+// @Description Get an Profile by id.
 // @Tags Profile
-// @Accept json
 // @Produce json
-// @Param id path int true "Profile ID"
-// @Success 200 {object} models.SuccessResponse{data=models.Profile} "Profile retrieved successfully"
-// @Failure 404 {object} models.ErrorResponse "Profile not found"
+// @Param id path string true "Profile id"
+// @Success 200 {object} models.SuccessResponse{data=models.Profile} "Success fetch Profile by id"
+// @Failure 400 {object} models.ErrorResponse "Invalid input"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
 // @Router /profiles/{id} [get]
 func (ctrl *ProfileController) GetByID(c *gin.Context) {
-	profileIDStr := c.Param("id")
-	profileID, err := strconv.ParseUint(profileIDStr, 10, 32)
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	profile, err := ctrl.profileService.GetProfileByID(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Status:  "error",
-			Message: "Invalid profile ID",
-		})
-		return
-	}
-
-	profile, err := ctrl.profileService.GetProfileByID(uint(profileID))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
 			Status:  "error",
 			Message: err.Error(),
 		})
@@ -144,64 +137,79 @@ func (ctrl *ProfileController) GetByID(c *gin.Context) {
 
 	c.JSON(http.StatusOK, models.SuccessResponse{
 		Status:  "success",
-		Message: "Profile retrieved successfully",
+		Message: "Get profile by id success",
 		Data:    profile,
 	})
 }
 
-// GetMyProfile godoc
-// @Summary Get all Profiles by current authenticated user.
-// @Description Retrieve a Profile by current authenticated user.
+// GetMyProfiles godoc
+// @Summary Get all profiles by current authenticated user.
+// @Description Get a list of profiles.
 // @Tags Profile
-// @Accept json
 // @Produce json
-// @Success 200 {object} models.SuccessResponse{data=models.Profile} "Profile retrieved successfully"
-// @Failure 404 {object} models.ErrorResponse "Profile not found"
+// @Success 200 {object} models.SuccessResponse{data=[]models.Profile} "Success fetch my profiles"
+// @Failure 400 {object} models.ErrorResponse "Invalid input"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
 // @Router /my-profiles [get]
-func (ctrl *ProfileController) GetMyProfile(c *gin.Context) {
+func (h *ProfileController) GetMyProfiles(c *gin.Context) {
 	var userID, _ = token.ExtractTokenID(c)
-	profile, err := ctrl.profileService.GetMyProfile(uint(userID))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
-			Status:  "error",
-			Message: err.Error(),
-		})
-		return
-	}
 
-	c.JSON(http.StatusOK, models.SuccessResponse{
-		Status:  "success",
-		Message: "Profile retrieved successfully",
-		Data:    profile,
-	})
-}
-
-// DeleteProfileByID godoc
-// @Summary Delete Profile by ID.
-// @Description Delete a Profile by its ID.
-// @Tags Profile
-// @Accept json
-// @Produce json
-// @Param id path int true "Profile ID"
-// @Success 200 {object} models.SuccessResponse{data=models.Profile} "Profile deleted successfully"
-// @Failure 404 {object} models.ErrorResponse "Profile not found"
-// @Failure 500 {object} models.ErrorResponse "Internal server error"
-// @Router /profiles/{id} [delete]
-func (ctrl *ProfileController) Delete(c *gin.Context) {
-	profileIDStr := c.Param("id")
-	profileID, err := strconv.ParseUint(profileIDStr, 10, 32)
+	profiles, err := h.profileService.GetMyProfile(int(userID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
 			Status:  "error",
-			Message: "Invalid profile ID",
+			Message: err.Error(),
 		})
 		return
 	}
 
-	profile, err := ctrl.profileService.DeleteProfile(uint(profileID))
+	c.JSON(http.StatusOK, models.SuccessResponse{
+		Status:  "success",
+		Message: "Get my profiles success",
+		Data:    profiles,
+	})
+}
+
+// DeleteProfile godoc
+// @Summary Delete one Profile.
+// @Description Delete a Profile by id (only authenticated user with valid user_id).
+// @Tags Profile
+// @Produce json
+// @Param id path string true "Profile id"
+// @Success 200 {object} models.SuccessResponse "Success delete a profile"
+// @Failure 400 {object} models.ErrorResponse "Invalid input"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Security BearerAuth
+// @Router /profiles/{id} [delete]
+func (h *ProfileController) DeleteProfile(c *gin.Context) {
+	db := c.MustGet("db").(*gorm.DB)
+	var userID, _ = token.ExtractTokenID(c)
+
+	// Validasi Parameter ID And Get model if exist
+	var profile models.Profile
+	if err := db.Where("id = ?", c.Param("id")).First(&profile).Error; err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Status:  "error",
+			Message: "Profile not found",
+		})
+		return
+	}
+
+	// Check apakah user berhak untuk edit
+	if profile.UserID != int(userID) {
+		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
+			Status:  "error",
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	err := h.profileService.DeleteProfile(int(profile.ID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
 			Status:  "error",
 			Message: err.Error(),
 		})
@@ -210,7 +218,7 @@ func (ctrl *ProfileController) Delete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, models.SuccessResponse{
 		Status:  "success",
-		Message: "Profile deleted successfully",
-		Data:    profile,
+		Message: "Delete Profile Success",
+		Data:    true,
 	})
 }

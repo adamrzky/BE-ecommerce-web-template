@@ -540,7 +540,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/my-transactions": {
+        "/mytransactions": {
             "get": {
                 "security": [
                     {
@@ -552,7 +552,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Transaction"
+                    "transactions"
                 ],
                 "summary": "Get all transactions by current authenticated user.",
                 "responses": {
@@ -1128,6 +1128,15 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {

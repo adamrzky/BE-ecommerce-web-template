@@ -27,7 +27,9 @@ func NewTransactionRepository(db *gorm.DB) TransactionRepository {
 // GetMyTransactions retrieves all transactions associated with a user ID
 func (r *transactionRepository) GetMyTransactions(userID int) ([]models.Transaction, error) {
 	var transactions []models.Transaction
-	err := r.db.Where("user_id = ?", userID).Find(&transactions).Error
+	err := r.db.Preload("Product").Preload("User", func(db *gorm.DB) *gorm.DB {
+		return db.Select("ID", "Username", "Email")
+	}).Where("user_id = ?", userID).Find(&transactions).Error
 	if err != nil {
 		return nil, err
 	}

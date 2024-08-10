@@ -23,14 +23,14 @@ func NewTransactionController(service services.TransactionService) *TransactionC
 // GetMyTransactions godoc
 // @Summary Get all transactions by current authenticated user.
 // @Description Retrieve a list of transactions associated with the authenticated user.
-// @Tags Transaction
+// @Tags transactions
 // @Produce json
 // @Success 200 {object} models.SuccessResponse{data=[]models.Transaction} "Success fetch my transactions"
 // @Failure 400 {object} models.ErrorResponse "Invalid input"
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
 // @Security BearerAuth
-// @Router /my-transactions [get]
+// @Router /mytransactions [get]
 func (c *TransactionController) GetMyTransactions(ctx *gin.Context) {
 	userID, err := token.ExtractTokenID(ctx)
 	if err != nil {

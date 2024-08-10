@@ -529,7 +529,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/my-transactions": {
+        "/mytransactions": {
             "get": {
                 "security": [
                     {
@@ -541,7 +541,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Transaction"
+                    "transactions"
                 ],
                 "summary": "Get all transactions by current authenticated user.",
                 "responses": {
@@ -1102,62 +1102,6 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "Profile deleted successfully",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/models.SuccessResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/models.Profile"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "404": {
-                        "description": "Profile not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/profiles/{id}/user": {
-            "get": {
-                "description": "Retrieve a Profile by its User ID.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Profile"
-                ],
-                "summary": "Get Profile by User ID.",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Profile retrieved successfully",
                         "schema": {
                             "allOf": [
                                 {

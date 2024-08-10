@@ -608,7 +608,7 @@ paths:
       summary: Get all reviews by current authenticated user.
       tags:
       - Review
-  /my-transactions:
+  /mytransactions:
     get:
       description: Retrieve a list of transactions associated with the authenticated
         user.
@@ -642,7 +642,7 @@ paths:
       - BearerAuth: []
       summary: Get all transactions by current authenticated user.
       tags:
-      - Transaction
+      - transactions
   /product:
     get:
       consumes:
@@ -984,40 +984,6 @@ paths:
       security:
       - BearerToken: []
       summary: Update Existing Profile.
-      tags:
-      - Profile
-  /profiles/{id}/user:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve a Profile by its User ID.
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Profile retrieved successfully
-          schema:
-            allOf:
-            - $ref: '#/definitions/models.SuccessResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/models.Profile'
-              type: object
-        "404":
-          description: Profile not found
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Get Profile by User ID.
       tags:
       - Profile
   /register:

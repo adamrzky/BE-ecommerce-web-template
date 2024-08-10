@@ -149,29 +149,19 @@ func (ctrl *ProfileController) GetByID(c *gin.Context) {
 	})
 }
 
-// GetProfileByUserID godoc
-// @Summary Get Profile by User ID.
-// @Description Retrieve a Profile by its User ID.
+// GetMyProfile godoc
+// @Summary Get all Profiles by current authenticated user.
+// @Description Retrieve a Profile by current authenticated user.
 // @Tags Profile
 // @Accept json
 // @Produce json
-// @Param id path int true "User ID"
 // @Success 200 {object} models.SuccessResponse{data=models.Profile} "Profile retrieved successfully"
 // @Failure 404 {object} models.ErrorResponse "Profile not found"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
-// @Router /profiles/{id}/user [get]
-func (ctrl *ProfileController) GetByUserID(c *gin.Context) {
-	userIDStr := c.Param("id")
-	userID, err := strconv.ParseUint(userIDStr, 10, 32)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Status:  "error",
-			Message: "Invalid user ID: " + userIDStr,
-		})
-		return
-	}
-
-	profile, err := ctrl.profileService.GetProfileByUserID(uint(userID))
+// @Router /my-profiles [get]
+func (ctrl *ProfileController) GetMyProfile(c *gin.Context) {
+	var userID, _ = token.ExtractTokenID(c)
+	profile, err := ctrl.profileService.GetMyProfile(uint(userID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
 			Status:  "error",

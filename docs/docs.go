@@ -424,6 +424,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/my-profiles": {
+            "get": {
+                "description": "Retrieve a Profile by current authenticated user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Get all Profiles by current authenticated user.",
+                "responses": {
+                    "200": {
+                        "description": "Profile retrieved successfully",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Profile"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Profile not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/my-reviews": {
             "get": {
                 "security": [
@@ -482,27 +529,24 @@ const docTemplate = `{
                 }
             }
         },
-        "/mytransactions": {
+        "/my-transactions": {
             "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "retrieve all transactions associated with the authenticated user",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Retrieve a list of transactions associated with the authenticated user.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "transactions"
+                    "Transaction"
                 ],
-                "summary": "Get my transactions",
+                "summary": "Get all transactions by current authenticated user.",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Success fetch my transactions",
                         "schema": {
                             "allOf": [
                                 {
@@ -523,7 +567,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid input",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -535,7 +579,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -561,6 +605,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Product name filter",
                         "name": "productName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Category filter",
+                        "name": "category",
                         "in": "query"
                     },
                     {

@@ -17,6 +17,20 @@ type Profile struct {
 	User User `gorm:"foreignKey:UserID"`
 }
 
+type ProfileResponse struct {
+	ID        uint               `json:"id"`
+	UserID    uint               `json:"user_id"`
+	Name      string             `json:"name"`
+	Gender    string             `json:"gender"`
+	City      string             `json:"city"`
+	Date      time.Time          `json:"date"`
+	Address   string             `json:"address"`
+	Phone     string             `json:"phone"`
+	CreatedAt time.Time          `json:"created_at"`
+	UpdatedAt time.Time          `json:"updated_at"`
+	User      SimpleUserResponse `json:"user"`
+}
+
 func (Profile) TableName() string {
 	return "PROFILE"
 }

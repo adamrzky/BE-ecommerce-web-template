@@ -546,6 +546,34 @@ paths:
       summary: Login a user
       tags:
       - auth
+  /my-profiles:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a Profile by current authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile retrieved successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Profile'
+              type: object
+        "404":
+          description: Profile not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all Profiles by current authenticated user.
+      tags:
+      - Profile
   /my-reviews:
     get:
       description: Get a list of reviews.
@@ -580,16 +608,15 @@ paths:
       summary: Get all reviews by current authenticated user.
       tags:
       - Review
-  /mytransactions:
+  /my-transactions:
     get:
-      consumes:
-      - application/json
-      description: retrieve all transactions associated with the authenticated user
+      description: Retrieve a list of transactions associated with the authenticated
+        user.
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Success fetch my transactions
           schema:
             allOf:
             - $ref: '#/definitions/models.SuccessResponse'
@@ -600,7 +627,7 @@ paths:
                   type: array
               type: object
         "400":
-          description: Bad Request
+          description: Invalid input
           schema:
             $ref: '#/definitions/models.ErrorResponse'
         "401":
@@ -608,14 +635,14 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Get my transactions
+      summary: Get all transactions by current authenticated user.
       tags:
-      - transactions
+      - Transaction
   /product:
     get:
       consumes:
@@ -627,6 +654,10 @@ paths:
         in: query
         name: productName
         type: string
+      - description: Category filter
+        in: query
+        name: category
+        type: integer
       - description: Minimum price filter
         in: query
         name: minPrice

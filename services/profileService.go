@@ -3,10 +3,7 @@ package services
 import (
 	"BE-ecommerce-web-template/models"
 	repository "BE-ecommerce-web-template/repositories"
-	"BE-ecommerce-web-template/utils/token"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 type ProfileService struct {
@@ -62,16 +59,58 @@ func (s *ProfileService) Update(profileID uint, userID uint, input ProfileInput)
 	return profile, nil
 }
 
-func (s *ProfileService) ExtractTokenID(c *gin.Context) (uint, error) {
-	return token.ExtractTokenID(c)
+func (s *ProfileService) GetProfileByID(profileID uint) (models.ProfileResponse, error) {
+	profile, err := s.ProfileRepo.GetProfileByID(profileID)
+	if err != nil {
+		return models.ProfileResponse{}, err
+	}
+
+	profileResponse := models.ProfileResponse{
+		ID:        profile.ID,
+		UserID:    profile.UserID,
+		Name:      profile.Name,
+		Gender:    profile.Gender,
+		City:      profile.City,
+		Date:      profile.Date,
+		Address:   profile.Address,
+		Phone:     profile.Phone,
+		CreatedAt: profile.CreatedAt,
+		UpdatedAt: profile.UpdatedAt,
+		User: models.SimpleUserResponse{
+			ID:       int(profile.User.ID),
+			Email:    profile.User.Email,
+			Username: profile.User.Username,
+		},
+	}
+
+	return profileResponse, nil
 }
 
-func (s *ProfileService) GetProfileByID(profileID uint) (models.Profile, error) {
-	return s.ProfileRepo.GetProfileByID(profileID)
-}
+func (s *ProfileService) GetMyProfile(userID uint) (models.ProfileResponse, error) {
+	profile, err := s.ProfileRepo.GetProfileByUserID(userID)
+	if err != nil {
+		return models.ProfileResponse{}, err
+	}
 
-func (s *ProfileService) GetProfileByUserID(userID uint) (models.Profile, error) {
-	return s.ProfileRepo.GetProfileByUserID(userID)
+	profileResponse := models.ProfileResponse{
+		ID:        profile.ID,
+		UserID:    profile.UserID,
+		Name:      profile.Name,
+		Gender:    profile.Gender,
+		City:      profile.City,
+		Date:      profile.Date,
+		Address:   profile.Address,
+		Phone:     profile.Phone,
+		CreatedAt: profile.CreatedAt,
+		UpdatedAt: profile.UpdatedAt,
+		User: models.SimpleUserResponse{
+			ID:       int(profile.User.ID),
+			Email:    profile.User.Email,
+			Username: profile.User.Username,
+		},
+	}
+
+	return profileResponse, nil
 }
 
 func (s *ProfileService) DeleteProfile(id uint) (models.Profile, error) {

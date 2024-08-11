@@ -4,16 +4,18 @@ import "time"
 
 // Transaction represents a financial transaction in the system
 type Transaction struct {
-	ID         uint    `gorm:"primaryKey"`
-	TRX_ID     string  `gorm:"unique"`
-	PRODUCT_ID uint    `gorm:"index"`
-	USER_ID    uint    `gorm:"index"`
-	STATUS     int     `gorm:"type:int"`
-	TOTAL      int     `gorm:"type:int"`
-	PAY_TYPE   string  `gorm:"type:varchar(255)"`
-	PAY_DATE   string  `json:"pay_DATE"`
-	Product    Product `gorm:"foreignKey:PRODUCT_ID"`
-	User       User    `gorm:"foreignKey:USER_ID"`
+	ID         uint      `gorm:"primaryKey"`
+	TRX_ID     string    `gorm:"unique"`
+	PRODUCT_ID uint      `gorm:"index"`
+	USER_ID    uint      `gorm:"index"`
+	STATUS     int       `gorm:"type:int"`
+	TOTAL      int       `gorm:"type:int"`
+	PAY_TYPE   string    `gorm:"type:varchar(255)"`
+	PAY_DATE   string    `json:"pay_DATE"`
+	CreatedAt  time.Time `json:"CREATED_AT"`
+	Product    Product   `gorm:"foreignKey:PRODUCT_ID"`
+	User       User      `gorm:"foreignKey:USER_ID"`
+	UpdatedAt  time.Time `json:"UPDATED_AT"`
 }
 
 // DetailTransaksi represents the detail of each transaction

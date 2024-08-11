@@ -12,6 +12,7 @@ type TransactionService interface {
 	UpdateTransaction(transaction *models.Transaction) error
 	DeleteTransaction(id uint) error
 	GetMyTransactions(userID int) ([]models.Transaction, error)
+	GetAllTransactions() ([]models.Transaction, error)
 }
 
 type transactionService struct {
@@ -21,6 +22,11 @@ type transactionService struct {
 // NewTransactionService returns a new instance of a TransactionService
 func NewTransactionService(repo repositories.TransactionRepository) TransactionService {
 	return &transactionService{repo}
+}
+
+// Implementasi GetAllTransactions
+func (s *transactionService) GetAllTransactions() ([]models.Transaction, error) {
+	return s.repo.GetAllTransactions()
 }
 
 // GetTransactionByID retrieves a transaction by its ID from the repository

@@ -1800,6 +1800,33 @@ const docTemplate = `{
             }
         },
         "/transactions": {
+            "get": {
+                "description": "Retrieve a list of all transactions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Get all transactions.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "create a new transaction",
                 "consumes": [
@@ -2367,6 +2394,9 @@ const docTemplate = `{
                 "categoryID": {
                     "type": "integer"
                 },
+                "description": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -2379,6 +2409,9 @@ const docTemplate = `{
                 "price": {
                     "type": "number"
                 },
+                "productProps": {
+                    "$ref": "#/definitions/models.ProductProps"
+                },
                 "slug": {
                     "type": "string"
                 },
@@ -2387,16 +2420,54 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ProductProps": {
+            "type": "object",
+            "properties": {
+                "averageRating": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "productID": {
+                    "type": "integer"
+                },
+                "totalLikes": {
+                    "type": "integer"
+                },
+                "totalReviews": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ProductPropsResponse": {
+            "type": "object",
+            "properties": {
+                "average_rating": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "total_likes": {
+                    "type": "integer"
+                },
+                "total_reviews": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.ProductRequest": {
             "type": "object",
-            "required": [
-                "name",
-                "price",
-                "slug"
-            ],
             "properties": {
                 "category_id": {
                     "type": "integer"
+                },
+                "description": {
+                    "type": "string"
                 },
                 "image_url": {
                     "type": "string"
@@ -2406,9 +2477,6 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "number"
-                },
-                "slug": {
-                    "type": "string"
                 },
                 "status": {
                     "type": "integer"
@@ -2424,6 +2492,9 @@ const docTemplate = `{
                 "category_id": {
                     "type": "integer"
                 },
+                "description": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -2435,6 +2506,9 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "number"
+                },
+                "product_props": {
+                    "$ref": "#/definitions/models.ProductPropsResponse"
                 },
                 "slug": {
                     "type": "string"
@@ -2556,6 +2630,12 @@ const docTemplate = `{
         "models.Transaction": {
             "type": "object",
             "properties": {
+                "CREATED_AT": {
+                    "type": "string"
+                },
+                "UPDATED_AT": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },

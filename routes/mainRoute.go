@@ -49,6 +49,7 @@ func SetupRouter(db *gorm.DB, r *gin.Engine) {
 	transactionService := services.NewTransactionService(transactionRepo)
 	transactionController := controllers.NewTransactionController(transactionService)
 
+	r.GET("/transactions", transactionController.GetAllTransactions)
 	r.GET("/transactions/:id", transactionController.GetTransactionByID)
 	r.POST("/transactions", transactionController.CreateTransaction)
 	r.PUT("/transactions/:id", transactionController.UpdateTransaction)

@@ -34,6 +34,8 @@ definitions:
         $ref: '#/definitions/models.Category'
       categoryID:
         type: integer
+      description:
+        type: string
       id:
         type: integer
       imageURL:
@@ -42,29 +44,53 @@ definitions:
         type: string
       price:
         type: number
+      productProps:
+        $ref: '#/definitions/models.ProductProps'
       slug:
         type: string
       status:
+        type: integer
+    type: object
+  models.ProductProps:
+    properties:
+      averageRating:
+        type: number
+      id:
+        type: integer
+      productID:
+        type: integer
+      totalLikes:
+        type: integer
+      totalReviews:
+        type: integer
+    type: object
+  models.ProductPropsResponse:
+    properties:
+      average_rating:
+        type: number
+      id:
+        type: integer
+      product_id:
+        type: integer
+      total_likes:
+        type: integer
+      total_reviews:
         type: integer
     type: object
   models.ProductRequest:
     properties:
       category_id:
         type: integer
+      description:
+        type: string
       image_url:
         type: string
       name:
         type: string
       price:
         type: number
-      slug:
-        type: string
       status:
         type: integer
-    required:
-    - name
-    - price
-    - slug
     type: object
   models.ProductResponse:
     properties:
@@ -72,6 +98,8 @@ definitions:
         $ref: '#/definitions/models.CategoryResponse'
       category_id:
         type: integer
+      description:
+        type: string
       id:
         type: integer
       image_url:
@@ -80,6 +108,8 @@ definitions:
         type: string
       price:
         type: number
+      product_props:
+        $ref: '#/definitions/models.ProductPropsResponse'
       slug:
         type: string
       status:
@@ -159,6 +189,10 @@ definitions:
     type: object
   models.Transaction:
     properties:
+      CREATED_AT:
+        type: string
+      UPDATED_AT:
+        type: string
       id:
         type: integer
       pay_DATE:
@@ -1390,6 +1424,24 @@ paths:
       tags:
       - role
   /transactions:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all transactions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all transactions.
+      tags:
+      - transactions
     post:
       consumes:
       - application/json

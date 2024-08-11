@@ -13,6 +13,7 @@ type TransactionRepository interface {
 	Create(transaction *models.Transaction) error
 	Update(transaction *models.Transaction) error
 	Delete(id uint) error
+	GetAllTransactions() ([]models.Transaction, error)
 }
 
 type transactionRepository struct {
@@ -22,6 +23,15 @@ type transactionRepository struct {
 // NewTransactionRepository returns a new instance of a transaction repository
 func NewTransactionRepository(db *gorm.DB) TransactionRepository {
 	return &transactionRepository{db}
+}
+
+func (r *transactionRepository) GetAllTransactions() ([]models.Transaction, error) {
+	var transactions []models.Transaction
+	err := r.db.Preload("Product").Preload("User").Find(&transactions).Error
+	if err != nil {
+		return nil, err
+	}
+	return transactions, nil
 }
 
 // GetMyTransactions retrieves all transactions associated with a user ID

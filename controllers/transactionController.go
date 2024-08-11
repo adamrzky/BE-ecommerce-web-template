@@ -20,6 +20,24 @@ func NewTransactionController(service services.TransactionService) *TransactionC
 	return &TransactionController{service: service}
 }
 
+// GetAllTransactions godoc
+// @Summary Get all transactions.
+// @Description Retrieve a list of all transactions
+// @Tags transactions
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} models.SuccessResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Router /transactions [get]
+func (ctrl *TransactionController) GetAllTransactions(c *gin.Context) {
+	transactions, err := ctrl.service.GetAllTransactions()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, transactions)
+}
+
 // GetMyTransactions godoc
 // @Summary Get all transactions by current authenticated user.
 // @Description Retrieve a list of transactions associated with the authenticated user.

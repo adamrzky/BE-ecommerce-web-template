@@ -19,11 +19,11 @@ func NewCategoryController(e *gin.Engine, cs services.CategoryService) {
 
 	categoryGroup := e.Group("/category")
 	{
-		categoryGroup.POST("", middlewares.JwtAuthMiddleware(role.Admin), handler.post)
+		categoryGroup.POST("", middlewares.JwtAuthMiddleware(role.Admin, role.Developer), handler.post)
 		categoryGroup.GET("", handler.getAll)
 		categoryGroup.GET("/:categoryID", handler.getByID)
-		categoryGroup.PUT("/:categoryID", middlewares.JwtAuthMiddleware(role.Admin), handler.update)
-		categoryGroup.DELETE("/:categoryID", middlewares.JwtAuthMiddleware(role.Admin), handler.delete)
+		categoryGroup.PUT("/:categoryID", middlewares.JwtAuthMiddleware(role.Admin, role.Developer), handler.update)
+		categoryGroup.DELETE("/:categoryID", middlewares.JwtAuthMiddleware(role.Admin, role.Developer), handler.delete)
 
 	}
 }

@@ -63,7 +63,19 @@ func (r *userRepository) CreateUser(user models.User) error {
 }
 
 func (r *userRepository) UpdateUser(user models.User) error {
-	return r.DB.Save(&user).Error
+	query := `UPDATE USER SET USERNAME = ?, PASSWORD = ?, EMAIL = ?, ROLE_ID = ? WHERE ID = ?`
+
+	result := r.DB.Exec(query, user.Username, user.Password, user.Email, user.RoleID, user.ID)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return errors.New("no rows affected, possible issue with ID")
+	}
+
+	return nil
 }
 
 func (r *userRepository) DeleteUser(id uint) error {

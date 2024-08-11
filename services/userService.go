@@ -108,12 +108,16 @@ func (s *userService) UpdateUser(id uint, input UpdateUserInput) (models.User, e
 		user.RoleID = *input.RoleID
 	}
 
-	err = s.UserRepo.UpdateUser(user)
+	if err := s.UserRepo.UpdateUser(user); err != nil {
+		return models.User{}, err
+	}
+
+	updatedUser, err := s.UserRepo.GetUserByID(id)
 	if err != nil {
 		return models.User{}, err
 	}
 
-	return user, nil
+	return updatedUser, nil
 }
 
 func (s *userService) DeleteUser(id uint) error {

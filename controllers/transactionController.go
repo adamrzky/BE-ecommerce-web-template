@@ -28,14 +28,22 @@ func NewTransactionController(service services.TransactionService) *TransactionC
 // @Produce  json
 // @Success 200 {object} models.SuccessResponse
 // @Failure 400 {object} models.ErrorResponse
-// @Router /transactions [get]
-func (ctrl *TransactionController) GetAllTransactions(c *gin.Context) {
-	transactions, err := ctrl.service.GetAllTransactions()
+// @Router /transactions/all [get]
+func (c *TransactionController) GetAllTransactions(ctx *gin.Context) {
+	transactions, err := c.service.GetAllTransactions()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Status:  "error",
+			Message: "Failed to retrieve all transactions",
+		})
 		return
 	}
-	c.JSON(http.StatusOK, transactions)
+
+	ctx.JSON(http.StatusOK, models.SuccessResponse{
+		Status:  "success",
+		Message: "Success fetch all transactions",
+		Data:    transactions,
+	})
 }
 
 // GetMyTransactions godoc

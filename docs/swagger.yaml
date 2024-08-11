@@ -1424,24 +1424,6 @@ paths:
       tags:
       - role
   /transactions:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve a list of all transactions
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.SuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Get all transactions.
-      tags:
-      - transactions
     post:
       consumes:
       - application/json
@@ -1544,6 +1526,25 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Update a transaction
+      tags:
+      - transactions
+  /transactions/all:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all transactions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all transactions.
       tags:
       - transactions
   /users:

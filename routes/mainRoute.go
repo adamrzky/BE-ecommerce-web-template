@@ -32,8 +32,10 @@ func SetupRouter(db *gorm.DB, r *gin.Engine) {
 
 	// User and Authentication
 	userRepo := repositories.NewUserRepository(db)
+	roleRepo := repositories.NewRoleRepository(db)
 	authService := &services.AuthService{
 		UserRepo: userRepo,
+		RoleRepo: roleRepo,
 	}
 	authController := controllers.NewAuthController(authService)
 
@@ -99,7 +101,6 @@ func SetupRouter(db *gorm.DB, r *gin.Engine) {
 	r.GET("/users", userController.GetAllUsers)
 
 	// Role
-	roleRepo := repositories.NewRoleRepository(db)
 	roleService := services.NewRoleService(roleRepo)
 	roleController := controllers.NewRoleController(roleService)
 

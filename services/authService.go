@@ -11,6 +11,7 @@ import (
 
 type AuthService struct {
 	UserRepo repository.UserRepository
+	RoleRepo repository.RoleRepository
 }
 
 type RegisterInput struct {
@@ -41,11 +42,17 @@ func (s *AuthService) Register(input RegisterInput) (models.User, error) {
 		return models.User{}, err
 	}
 
+	roleName := "Client"
+	role, err := s.RoleRepo.GetOrCreateRoleByName(roleName)
+	if err != nil {
+		return models.User{}, err
+	}
+
 	user := models.User{
 		Username: input.Username,
 		Password: string(hashedPassword),
 		Email:    input.Email,
-		RoleID:   1,
+		RoleID:   role.ID,
 	}
 
 	err = s.UserRepo.CreateUser(user)

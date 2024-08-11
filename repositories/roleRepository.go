@@ -17,6 +17,7 @@ type RoleRepository interface {
 	CreateRole(role models.Role) error
 	UpdateRole(role models.Role) error
 	DeleteRole(id uint) error
+	GetOrCreateRoleByName(name string) (models.Role, error)
 }
 
 type roleRepository struct {
@@ -59,4 +60,30 @@ func (r *roleRepository) DeleteRole(id uint) error {
 		return err
 	}
 	return nil
+}
+
+func (r *roleRepository) GetOrCreateRoleByName(name string) (models.Role, error) {
+	var role models.Role
+
+	err := r.DB.Where("name = ?", name).First(&role).Error
+	if err == nil {
+
+		return role, nil
+	}
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		role = models.Role{Name: name}
+		err = r.DB.Create(&role).Error
+		if err != nil {
+			return models.Role{}, err
+		}
+
+		err = r.DB.Where("name = ?", name).First(&role).Error
+		if err != nil {
+			return models.Role{}, err
+		}
+		return role, nil
+	}
+
+	return models.Role{}, err
 }

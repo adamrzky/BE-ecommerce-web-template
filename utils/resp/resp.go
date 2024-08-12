@@ -42,3 +42,12 @@ func NewResponseUnauthorized(c *gin.Context, message string) {
 		Message: message,
 	})
 }
+
+func NewResponseProductsSuccess(c *gin.Context, counts int64, result interface{}, message string) {
+	c.JSON(http.StatusOK, models.ProductsResponse{
+		Status:  "success",
+		Message: message,
+		Counts:  counts,
+		Data:    result,
+	})
+}

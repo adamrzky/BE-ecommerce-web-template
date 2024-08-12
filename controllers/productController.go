@@ -84,13 +84,13 @@ func (controller *productController) getAll(c *gin.Context) {
 		return
 	}
 
-	products, err := controller.productService.GetAll(queryParams)
+	products, counts, err := controller.productService.GetAll(queryParams)
 	if err != nil {
 		resp.NewResponseError(c, err.Error())
 		return
 	}
 
-	resp.NewResponseSuccess(c, products, "data received")
+	resp.NewResponseProductsSuccess(c, counts, products, "data received")
 }
 
 // getByID retrieves a product by its ID

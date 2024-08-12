@@ -17,6 +17,7 @@ type ProductRepository interface {
 	DeleteLike(userID, productID uint) error
 	GetLikesByUserID(userID uint) ([]models.UserProductLikes, error)
 	CompositeLikeExist(userID, prpoductID uint) (bool, error)
+	CountProducts(params models.ProductQueryParam) (int64, error)
 }
 
 type productRepository struct {
@@ -57,6 +58,32 @@ func (repo *productRepository) GetAll(params models.ProductQueryParam) ([]models
 
 	err := query.Find(&products).Error
 	return products, err
+}
+
+func (repo *productRepository) CountProducts(params models.ProductQueryParam) (int64, error) {
+	var count int64
+	query := repo.db.Model(&models.Product{}).Preload("Category").Preload("ProductProps")
+
+	// Name filter
+	if params.ProductName != "" {
+		query = query.Where("NAME LIKE ?", "%"+params.ProductName+"%")
+	}
+
+	// Category filter
+	if params.Category != 0 {
+		query = query.Where("CATEGORY_ID = ?", params.Category)
+	}
+
+	// Price filter
+	if params.MinPrice > 0 {
+		query = query.Where("PRICE >= ?", params.MinPrice)
+	}
+	if params.MaxPrice > 0 {
+		query = query.Where("PRICE <= ?", params.MaxPrice)
+	}
+
+	err := query.Count(&count).Error
+	return count, err
 }
 
 func (repo *productRepository) GetByID(id uint) (models.Product, error) {

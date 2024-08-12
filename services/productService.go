@@ -9,7 +9,7 @@ import (
 )
 
 type ProductService interface {
-	GetAll(params models.ProductQueryParam) ([]models.ProductResponse, error)
+	GetAll(params models.ProductQueryParam) ([]models.ProductResponse, int64, error)
 	GetByID(id string) (models.ProductResponse, error)
 	Post(req models.ProductRequest) error
 	Update(req models.ProductRequest, id string) error
@@ -29,10 +29,15 @@ func NewProductService(cr repository.ProductRepository) ProductService {
 	return &productService{cr}
 }
 
-func (service *productService) GetAll(params models.ProductQueryParam) ([]models.ProductResponse, error) {
+func (service *productService) GetAll(params models.ProductQueryParam) ([]models.ProductResponse, int64, error) {
 	products, err := service.productRepo.GetAll(params)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
+	}
+
+	count, err := service.productRepo.CountProducts(params)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	var productResponses []models.ProductResponse
@@ -53,7 +58,7 @@ func (service *productService) GetAll(params models.ProductQueryParam) ([]models
 		productResponses = append(productResponses, productResponse)
 	}
 
-	return productResponses, nil
+	return productResponses, count, nil
 }
 
 func (service *productService) GetByID(id string) (models.ProductResponse, error) {

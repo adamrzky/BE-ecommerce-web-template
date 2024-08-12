@@ -13,6 +13,7 @@ type TransactionService interface {
 	DeleteTransaction(id uint) error
 	GetMyTransactions(userID int) ([]models.Transaction, error)
 	GetAllTransactions() ([]models.Transaction, error)
+	UpdateTransactionStatus(trxID string, status int) error
 }
 
 type transactionService struct {
@@ -60,4 +61,9 @@ func (s *transactionService) GetMyTransactions(userID int) ([]models.Transaction
 		return nil, err
 	}
 	return transactions, nil
+}
+
+// UpdateTransactionStatus updates the status of a transaction based on its TRX_ID
+func (s *transactionService) UpdateTransactionStatus(trxID string, status int) error {
+	return s.repo.UpdateTransactionStatus(trxID, status)
 }

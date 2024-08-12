@@ -681,6 +681,120 @@ paths:
       summary: Get all transactions by current authenticated user.
       tags:
       - transactions
+  /payment-inquiry:
+    post:
+      consumes:
+      - application/json
+      description: Performs a transaction inquiry to the payment gateway using transaction
+        details.
+      parameters:
+      - description: Merchant Code for the transaction
+        in: body
+        name: merchantCode
+        required: true
+        schema:
+          type: string
+      - description: Amount of the transaction
+        in: body
+        name: paymentAmount
+        required: true
+        schema:
+          type: integer
+      - description: Order ID of the transaction
+        in: body
+        name: merchantOrderID
+        required: true
+        schema:
+          type: string
+      - description: Details of the product involved in the transaction
+        in: body
+        name: productDetails
+        required: true
+        schema:
+          type: string
+      - description: Customer email
+        in: body
+        name: email
+        required: true
+        schema:
+          type: string
+      - description: Method of payment
+        in: body
+        name: paymentMethod
+        required: true
+        schema:
+          type: string
+      - description: API Key for authentication
+        in: body
+        name: apiKey
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully performed inquiry
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      tags:
+      - Payment
+  /payment-methods:
+    post:
+      consumes:
+      - application/json
+      description: Retrieves available payment methods from the payment gateway using
+        provided merchant details.
+      parameters:
+      - description: Merchant Code
+        in: body
+        name: merchantCode
+        required: true
+        schema:
+          type: string
+      - description: API Key
+        in: body
+        name: apiKey
+        required: true
+        schema:
+          type: string
+      - description: Amount to be processed
+        in: body
+        name: amount
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved payment methods
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      tags:
+      - Payment
   /product:
     get:
       consumes:

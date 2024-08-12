@@ -1,15 +1,9 @@
 package controllers
 
 import (
-	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strconv"
-	"time"
 
 	"BE-ecommerce-web-template/models"
 	"BE-ecommerce-web-template/services"
@@ -24,40 +18,6 @@ type TransactionController struct {
 
 func NewTransactionController(service services.TransactionService) *TransactionController {
 	return &TransactionController{service: service}
-}
-
-func GetPaymentMethods(c *gin.Context) {
-	merchantCode := "DS19954"
-	apiKey := "21c42276c6d03ddee20ab69e23deaa10"
-	datetime := time.Now().Format("2006-01-02 15:04:05")
-	paymentAmount := "10000"
-	signatureString := fmt.Sprintf("%s%s%s%s", merchantCode, paymentAmount, datetime, apiKey)
-	signatureBytes := sha256.Sum256([]byte(signatureString))
-	signature := hex.EncodeToString(signatureBytes[:])
-
-	body := map[string]string{
-		"merchantCode": merchantCode,
-		"amount":       paymentAmount,
-		"datetime":     datetime,
-		"signature":    signature,
-	}
-	bodyBytes, _ := json.Marshal(body)
-
-	req, _ := http.NewRequest("POST", "https://sandbox.duitku.com/webapi/api/merchant/paymentmethod/getpaymentmethod", bytes.NewReader(bodyBytes))
-	req.Header.Add("Content-Type", "application/json")
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to request payment methods"})
-		return
-	}
-	defer resp.Body.Close()
-	responseBody, _ := ioutil.ReadAll(resp.Body)
-
-	var result map[string]interface{}
-	json.Unmarshal(responseBody, &result)
-
-	c.JSON(http.StatusOK, result)
 }
 
 // GetAllTransactions godoc

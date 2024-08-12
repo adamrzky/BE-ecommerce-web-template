@@ -56,7 +56,10 @@ func SetupRouter(db *gorm.DB, r *gin.Engine) {
 	r.DELETE("/transactions/:id", transactionController.DeleteTransaction)
 	r.GET("/mytransactions", transactionController.GetMyTransactions)
 
+	// Payment Gateway
+
 	r.POST("/payment-methods", controllers.GetPaymentMethods)
+	r.POST("/payment-inquiry", controllers.Inquiry)
 
 	// Swagger API Docs
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

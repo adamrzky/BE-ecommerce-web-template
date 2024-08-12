@@ -144,16 +144,17 @@ func Inquiry(c *gin.Context) {
 // @Failure 400 {object} map[string]interface{} "Invalid request body"
 // @Router /payment-callback [post]
 func PaymentCallback(c *gin.Context) {
-	var callbackData map[string]interface{}
-
-	if err := c.BindJSON(&callbackData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+	// Read the raw body data
+	bodyBytes, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		fmt.Println("Error reading request body:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read request body"})
 		return
 	}
 
-	// Log the callback data to console or file
-	fmt.Printf("Received callback data: %+v\n", callbackData)
+	// Log the raw request data
+	fmt.Println("Raw request data:", string(bodyBytes))
 
-	// Respond to the callback
-	c.JSON(http.StatusOK, gin.H{"message": "Callback received successfully"})
+	// Respond that the request has been received
+	c.JSON(http.StatusOK, gin.H{"message": "Request received successfully"})
 }

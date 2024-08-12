@@ -88,7 +88,14 @@ func (repo *productRepository) Update(product *models.Product, id uint) error {
 }
 
 func (repo *productRepository) Delete(id uint) error {
-	return repo.db.Where("ID = ?", id).Delete(&models.Product{}).Error
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("product_id = ?", id).Delete(&models.ProductProps{}).Error; err != nil {
+			return err
+		}
+
+		return tx.Where("ID = ?", id).Delete(&models.Product{}).Error
+	})
+
 }
 
 func (repo *productRepository) PostLike(userID, productID uint) error {

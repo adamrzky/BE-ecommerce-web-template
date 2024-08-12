@@ -15,6 +15,8 @@ type ProductRepository interface {
 	Delete(id uint) error
 	PostLike(userID, productID uint) error
 	DeleteLike(userID, productID uint) error
+	GetLikesByUserID(userID uint) ([]models.UserProductLikes, error)
+	CompositeLikeExist(userID, prpoductID uint) (bool, error)
 }
 
 type productRepository struct {
@@ -70,7 +72,15 @@ func (repo *productRepository) GetBySlug(slug string) (models.Product, error) {
 }
 
 func (repo *productRepository) Post(product models.Product) error {
-	return repo.db.Create(&product).Error
+	// return repo.db.Create(&product).Error
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		// makes product creation below to return id so i can use for assign to product props
+		if err := tx.Create(&product).Error; err != nil {
+			return err
+		}
+		product.ProductProps.ProductID = product.ID
+		return tx.Create(&product.ProductProps).Error
+	})
 }
 
 func (repo *productRepository) Update(product *models.Product, id uint) error {
@@ -87,4 +97,16 @@ func (repo *productRepository) PostLike(userID, productID uint) error {
 
 func (repo *productRepository) DeleteLike(userID, productID uint) error {
 	return repo.db.Exec("CALL DislikeProduct(?, ?)", userID, productID).Error
+}
+
+func (repo *productRepository) GetLikesByUserID(userID uint) ([]models.UserProductLikes, error) {
+	var likes []models.UserProductLikes
+	err := repo.db.Preload("Product").Where("user_id = ?", userID).Find(&likes).Error
+	return likes, err
+}
+
+func (repo *productRepository) CompositeLikeExist(userID, productID uint) (bool, error) {
+	var count int64
+	err := repo.db.Model(&models.UserProductLikes{}).Where("user_id = ? AND product_id = ?", userID, productID).Count(&count).Error
+	return count > 0, err
 }

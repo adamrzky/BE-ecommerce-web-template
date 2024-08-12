@@ -17,6 +17,8 @@ type ProductService interface {
 	PostLike(userID uint, productID string) error
 	DeleteLike(userID uint, productID string) error
 	GetBySlug(slug string) (models.ProductResponse, error)
+	GetLikesByUserID(userID uint) ([]models.UserProductLikesResponse, error)
+	CompositeLikeExist(userID uint, productID string) (bool, error)
 }
 
 type productService struct {
@@ -187,4 +189,43 @@ func (service *productService) DeleteLike(userID uint, productID string) error {
 		return err
 	}
 	return service.productRepo.DeleteLike(userID, uint(productIDInt))
+}
+
+func (service *productService) GetLikesByUserID(userID uint) ([]models.UserProductLikesResponse, error) {
+	likes, err := service.productRepo.GetLikesByUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var responses []models.UserProductLikesResponse
+	for _, like := range likes {
+		response := models.UserProductLikesResponse{
+			UserID:    like.UserID,
+			ProductID: like.ProductID,
+			Product: models.ProductResponse{
+				ID:           like.Product.ID,
+				Name:         like.Product.Name,
+				Description:  like.Product.Description,
+				Price:        like.Product.Price,
+				Slug:         like.Product.Slug,
+				ImageURL:     like.Product.ImageURL,
+				Status:       like.Product.Status,
+				CategoryID:   like.Product.CategoryID,
+				Category:     models.CategoryResponse(like.Product.Category),
+				ProductProps: models.ProductPropsResponse(like.Product.ProductProps),
+			},
+		}
+
+		responses = append(responses, response)
+	}
+
+	return responses, nil
+}
+
+func (service *productService) CompositeLikeExist(userID uint, productID string) (bool, error) {
+	productIDInt, err := strconv.Atoi(productID)
+	if err != nil {
+		return false, err
+	}
+	return service.productRepo.CompositeLikeExist(userID, uint(productIDInt))
 }

@@ -28,6 +28,8 @@ func NewProductController(e *gin.Engine, cs services.ProductService) {
 		productGroup.DELETE("/:productID", middlewares.JwtAuthMiddleware(role.Admin, role.Developer), handler.delete)
 		productGroup.PUT("/:productID/likes", middlewares.JwtAuthMiddleware(), handler.likeProduct)
 		productGroup.DELETE("/:productID/likes", middlewares.JwtAuthMiddleware(), handler.dislikeProduct)
+		productGroup.GET("/likes", middlewares.JwtAuthMiddleware(), handler.getLikesByUserID)
+		productGroup.GET("/:productID/likes/status", middlewares.JwtAuthMiddleware(), handler.getLikeStatus)
 	}
 }
 
@@ -207,4 +209,38 @@ func (controller *productController) dislikeProduct(c *gin.Context) {
 	}
 
 	resp.NewResponseSuccess(c, nil, "success dislike the product")
+}
+
+func (controller *productController) getLikesByUserID(c *gin.Context) {
+	claims, err := token.ExtractClaims(c)
+	if err != nil {
+		resp.NewResponseError(c, err.Error())
+		return
+	}
+
+	res, err := controller.productService.GetLikesByUserID(claims.ID)
+	if err != nil {
+		resp.NewResponseError(c, err.Error())
+		return
+	}
+
+	resp.NewResponseSuccess(c, res, "data received")
+}
+
+func (controller *productController) getLikeStatus(c *gin.Context) {
+	productID := c.Param("productID")
+
+	claims, err := token.ExtractClaims(c)
+	if err != nil {
+		resp.NewResponseError(c, err.Error())
+		return
+	}
+
+	status, err := controller.productService.CompositeLikeExist(claims.ID, productID)
+	if err != nil {
+		resp.NewResponseError(c, err.Error())
+		return
+	}
+
+	resp.NewResponseSuccess(c, status, "success received like status")
 }

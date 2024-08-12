@@ -132,3 +132,28 @@ func Inquiry(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
+
+// CallbackController handles payment gateway callbacks
+// Callback @Summary Receive payment gateway callback
+// @Description Receives and logs payment callback data from the payment gateway.
+// @Tags Payment
+// @Accept json
+// @Produce json
+// @Param data body object true "Payment Callback Data"
+// @Success 200 {object} map[string]interface{} "Successfully received callback"
+// @Failure 400 {object} map[string]interface{} "Invalid request body"
+// @Router /payment-callback [post]
+func PaymentCallback(c *gin.Context) {
+	var callbackData map[string]interface{}
+
+	if err := c.BindJSON(&callbackData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	// Log the callback data to console or file
+	fmt.Printf("Received callback data: %+v\n", callbackData)
+
+	// Respond to the callback
+	c.JSON(http.StatusOK, gin.H{"message": "Callback received successfully"})
+}

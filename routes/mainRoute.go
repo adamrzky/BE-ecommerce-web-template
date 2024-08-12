@@ -60,6 +60,7 @@ func SetupRouter(db *gorm.DB, r *gin.Engine) {
 
 	r.POST("/payment-methods", controllers.GetPaymentMethods)
 	r.POST("/payment-inquiry", controllers.Inquiry)
+	r.POST("/payment-callback", controllers.PaymentCallback)
 
 	// Swagger API Docs
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

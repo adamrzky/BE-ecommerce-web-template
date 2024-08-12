@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"BE-ecommerce-web-template/services"
 	"bytes"
 	"crypto/md5"
 	"crypto/sha256"
@@ -9,10 +10,19 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
+
+type PaymentCallbackController struct {
+	service services.TransactionService
+}
+
+func NewPaymentCallbackController(service services.TransactionService) *PaymentCallbackController {
+	return &PaymentCallbackController{service: service}
+}
 
 // GetPaymentMethods @Summary Get payment methods
 // @Description Retrieves available payment methods from the payment gateway using provided merchant details.
@@ -143,18 +153,34 @@ func Inquiry(c *gin.Context) {
 // @Success 200 {object} map[string]interface{} "Successfully received callback"
 // @Failure 400 {object} map[string]interface{} "Invalid request body"
 // @Router /payment-callback [post]
-func PaymentCallback(c *gin.Context) {
-	// Read the raw body data
-	bodyBytes, err := ioutil.ReadAll(c.Request.Body)
+func (c *PaymentCallbackController) PaymentCallback(ctx *gin.Context) {
+	bodyBytes, err := ioutil.ReadAll(ctx.Request.Body)
 	if err != nil {
 		fmt.Println("Error reading request body:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read request body"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read request body"})
 		return
 	}
 
-	// Log the raw request data
-	fmt.Println("Raw request data:", string(bodyBytes))
+	values, err := url.ParseQuery(string(bodyBytes))
+	if err != nil {
+		fmt.Println("Error parsing form data:", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse form data"})
+		return
+	}
 
-	// Respond that the request has been received
-	c.JSON(http.StatusOK, gin.H{"message": "Request received successfully"})
+	trxID := values.Get("merchantOrderId")
+	if trxID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Merchant Order ID is required"})
+		return
+	}
+
+	status := 2 // Assuming '2' signifies a successful transaction
+	if err := c.service.UpdateTransactionStatus(trxID, status); err != nil {
+		fmt.Println("Error updating transaction status:", err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update transaction status"})
+		return
+	}
+
+	fmt.Printf("Updated transaction status for Merchant Order ID: %s to %d\n", trxID, status)
+	ctx.JSON(http.StatusOK, gin.H{"message": "Callback processed and status updated successfully", "merchantOrderId": trxID})
 }

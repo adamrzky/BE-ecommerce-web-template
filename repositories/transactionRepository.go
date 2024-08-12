@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"BE-ecommerce-web-template/models"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -14,6 +15,7 @@ type TransactionRepository interface {
 	Update(transaction *models.Transaction) error
 	Delete(id uint) error
 	GetAllTransactions() ([]models.Transaction, error)
+	UpdateTransactionStatus(trxID string, status int) error
 }
 
 type transactionRepository struct {
@@ -76,4 +78,25 @@ func (repo *transactionRepository) Update(transaction *models.Transaction) error
 func (repo *transactionRepository) Delete(id uint) error {
 	result := repo.db.Delete(&models.Transaction{}, id)
 	return result.Error
+}
+
+// UpdateTransactionStatus updates the status of a transaction based on TRX_ID
+func (repo *transactionRepository) UpdateTransactionStatus(trxID string, status int) error {
+	// Mulai dengan cek keberadaan transaksi terlebih dahulu
+	var count int64
+	result := repo.db.Model(&models.Transaction{}).Where("TRX_ID = ?", trxID).Count(&count)
+	if result.Error != nil {
+		return result.Error // Error saat query database
+	}
+	if count == 0 {
+		return fmt.Errorf("tidak ada transaksi dengan TRX_ID: %s", trxID) // Tidak ada transaksi yang ditemukan
+	}
+
+	// Jika transaksi ditemukan, lanjutkan dengan update statusnya
+	result = repo.db.Model(&models.Transaction{}).Where("TRX_ID = ?", trxID).Update("STATUS", status)
+	if result.Error != nil {
+		return result.Error // Error saat update
+	}
+
+	return nil // Sukses
 }
